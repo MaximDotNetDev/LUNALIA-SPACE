@@ -25,6 +25,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Infrastructure\Common\" />
+	  <Folder Include="Features\Infrastructure\Logs\" />
 	  <Folder Include="Features\Reference\Common\" />
 	</ItemGroup>
 	
