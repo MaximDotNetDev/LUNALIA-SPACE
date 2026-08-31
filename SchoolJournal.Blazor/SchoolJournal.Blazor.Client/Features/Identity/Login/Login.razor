@@ -1,0 +1,91 @@
+﻿@page "/login"
+@layout SchoolJournal.Blazor.Client.Layout.EmptyLayout
+@implements IDisposable
+@using SchoolJournal.Client.Core.Features.Identity.Login
+@inject LoginViewModel ViewModel
+@inject NavigationManager NavigationManager
+
+<div class="login-container">
+    <div class="login-card">
+
+        <div class="logo-text">
+            LUNALIA<br />
+            <span class="logo-subtext">S P A C E</span>
+        </div>
+
+        <div class="input-group">
+            <label for="loginInput">Логін:</label>
+            <input id="loginInput"
+                   type="text"
+                   class="space-input"
+                   maxlength="50"
+                   disabled="@ViewModel.IsLoading"
+                   @bind="ViewModel.Login"
+                   @bind:event="oninput" />
+        </div>
+
+        <div class="input-group">
+            <label for="passwordInput">Пароль:</label>
+            <input id="passwordInput"
+                   type="password"
+                   class="space-input"
+                   maxlength="50"
+                   disabled="@ViewModel.IsLoading"
+                   @bind="ViewModel.Password"
+                   @bind:event="oninput" />
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+        {
+            <div class="error-message">
+                @ViewModel.ErrorMessage
+            </div>
+        }
+
+        <button class="space-primary-button"
+                disabled="@ViewModel.IsLoading"
+                @onclick="ExecuteLogin">
+            @(ViewModel.IsLoading ? "Зачекайте..." : "Увійти")
+        </button>
+
+        @if (ViewModel.IsLoading)
+        {
+            <div class="loading-bar">
+                <div class="progress-bar-indeterminate"></div>
+            </div>
+        }
+
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ViewModel.OnLoginSuccess += NavigateToMain;
+
+        // Підписуємося на зміни у ViewModel, щоб Blazor знав, коли перемальовувати UI
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private async Task ExecuteLogin()
+    {
+        await ViewModel.ExecuteLoginCommand.ExecuteAsync(null);
+    }
+
+    private void NavigateToMain()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // Кажемо Blazor примусово перевірити зміни і оновити HTML
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ViewModel.OnLoginSuccess -= NavigateToMain;
+        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+    }
+}

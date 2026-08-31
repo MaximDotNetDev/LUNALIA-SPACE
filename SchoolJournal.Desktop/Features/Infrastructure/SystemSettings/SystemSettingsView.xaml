@@ -1,0 +1,120 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Infrastructure.SystemSettings.SystemSettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock
+                FontSize="22"
+                FontWeight="Bold"
+                Text="Системні налаштування" />
+            <TextBlock
+                Margin="0,5,0,0"
+                Foreground="Gray"
+                Text="Глобальні параметри школи (назва, навчальний рік)" />
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Width="450"
+            Padding="25"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="White"
+            CornerRadius="8">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="15"
+                    Direction="270"
+                    Opacity="0.1"
+                    ShadowDepth="2" />
+            </Border.Effect>
+
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,15"
+                    Foreground="Red"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+                <TextBlock
+                    Margin="0,0,0,15"
+                    FontWeight="SemiBold"
+                    Foreground="#27AE60"
+                    Text="{Binding SuccessMessage}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding SuccessMessage, Converter={StaticResource UniversalVis}}" />
+
+                <TextBlock
+                    Margin="0,0,0,5"
+                    FontWeight="SemiBold"
+                    Foreground="#555"
+                    Text="Назва школи *" />
+                <TextBox
+                    Margin="0,0,0,15"
+                    Padding="8"
+                    IsEnabled="{Binding CanEdit}"
+                    Text="{Binding SchoolName, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock
+                    Margin="0,0,0,5"
+                    FontWeight="SemiBold"
+                    Foreground="#555"
+                    Text="Академічний рік *" />
+                <TextBox
+                    Margin="0,0,0,15"
+                    Padding="8"
+                    IsEnabled="{Binding CanEdit}"
+                    Text="{Binding AcademicYear, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="Формат: 2026-2027" />
+
+                <TextBlock
+                    Margin="0,0,0,5"
+                    FontWeight="SemiBold"
+                    Foreground="#555"
+                    Text="ПІБ Директора" />
+                <TextBox
+                    Margin="0,0,0,25"
+                    Padding="8"
+                    IsEnabled="{Binding CanEdit}"
+                    Text="{Binding PrincipalName, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        Grid.Column="0"
+                        Padding="15,10"
+                        Background="#2ECC71"
+                        BorderThickness="0"
+                        Command="{Binding SaveSettingsCommand}"
+                        Content="💾 Зберегти"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Visibility="{Binding CanEdit, Converter={StaticResource UniversalVis}}" />
+                    <ProgressBar
+                        Grid.Column="1"
+                        Height="4"
+                        Margin="15,0,0,0"
+                        VerticalAlignment="Center"
+                        IsIndeterminate="True"
+                        Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

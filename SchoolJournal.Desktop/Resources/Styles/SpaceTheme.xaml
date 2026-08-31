@@ -1,0 +1,748 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="SpaceModalOverlayBrush" Color="#80000000" />
+    <SolidColorBrush x:Key="ErrorTextBrush" Color="#E74C3C" />
+    <SolidColorBrush x:Key="WarningTextBrush" Color="#F39C12" />
+    <SolidColorBrush x:Key="AccentTextBrush" Color="BlueViolet" />
+
+    <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource ErrorTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="WarningTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource WarningTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="AccentTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="LogoTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="ExtraBold" />
+        <Setter Property="Foreground" Value="BlueViolet" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                    BlurRadius="15"
+                    Direction="0"
+                    Opacity="0.7"
+                    ShadowDepth="0"
+                    Color="BlueViolet" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LogoRunStyle" TargetType="Run">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="BlueViolet" />
+    </Style>
+
+    <Style x:Key="SpaceInputBase" TargetType="Control">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <Border
+                        Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="20">
+                        <Border.Effect>
+                            <DropShadowEffect
+                                BlurRadius="15"
+                                Direction="0"
+                                Opacity="1"
+                                ShadowDepth="0"
+                                Color="BlueViolet" />
+                        </Border.Effect>
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="2" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Border" Property="BorderThickness" Value="1.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style BasedOn="{StaticResource SpaceInputBase}" TargetType="TextBox" />
+    <Style BasedOn="{StaticResource SpaceInputBase}" TargetType="PasswordBox" />
+
+    <Style TargetType="ComboBox">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="8,4" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton
+                            Name="ToggleButton"
+                            Grid.Column="2"
+                            Background="Transparent"
+                            BorderBrush="BlueViolet"
+                            ClickMode="Press"
+                            Focusable="false"
+                            Foreground="{TemplateBinding Foreground}"
+                            IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border
+                                        x:Name="Border"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="20">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <ContentPresenter
+                                                Grid.Column="0"
+                                                Margin="8,0,0,0"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Content="{TemplateBinding Content}"
+                                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+
+                                            <Path
+                                                x:Name="Arrow"
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Data="M0,0 L4,4 L8,0 Z"
+                                                Fill="{DynamicResource TextSecondaryBrush}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Border" Property="Opacity" Value="1" />
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+                                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                            <Setter TargetName="Border" Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect
+                                                        BlurRadius="15"
+                                                        Direction="0"
+                                                        Opacity="1"
+                                                        ShadowDepth="5"
+                                                        Color="BlueViolet" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter TargetName="Arrow" Property="Fill" Value="BlueViolet" />
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+
+                        <ContentPresenter
+                            Name="ContentSite"
+                            Margin="8,0,30,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding SelectionBoxItem}"
+                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                            IsHitTestVisible="False" />
+
+                        <Popup
+                            Name="Popup"
+                            AllowsTransparency="True"
+                            Focusable="False"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            Placement="Bottom"
+                            PopupAnimation="Slide">
+                            <Grid
+                                Name="DropDown"
+                                MinWidth="{TemplateBinding ActualWidth}"
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                SnapsToDevicePixels="True">
+                                <Border
+                                    x:Name="DropDownBorder"
+                                    Margin="0,4,0,0"
+                                    Background="{DynamicResource SpaceBackgroundBrush}"
+                                    BorderBrush="BlueViolet"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+                                    <Border.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="15"
+                                            Direction="0"
+                                            Opacity="1"
+                                            ShadowDepth="0"
+                                            Color="BlueViolet" />
+                                    </Border.Effect>
+                                    <ScrollViewer Margin="0,4" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border
+                        x:Name="Border"
+                        Margin="4,1"
+                        Padding="{TemplateBinding Padding}"
+                        Background="Transparent"
+                        CornerRadius="4">
+
+                        <ContentPresenter VerticalAlignment="Center" TextBlock.Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SurfaceBrush}" />
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            <Setter Property="TextBlock.Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SpacePrimaryButton" TargetType="Button">
+        <Setter Property="Background" Value="BlueViolet" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Height" Value="48" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        Name="BtnBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="20">
+                        <Border.Effect>
+                            <DropShadowEffect
+                                BlurRadius="0"
+                                Opacity="0"
+                                ShadowDepth="0"
+                                Color="BlueViolet" />
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        BlurRadius="15"
+                                        Opacity="1"
+                                        ShadowDepth="0"
+                                        Color="BlueViolet" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="DarkViolet" />
+                            <Setter TargetName="BtnBorder" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        BlurRadius="15"
+                                        Opacity="1"
+                                        ShadowDepth="0"
+                                        Color="DarkViolet" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="#E5E7EB" />
+                            <Setter Property="Foreground" Value="#9CA3AF" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuButtonStyle" TargetType="Button">
+        <Setter Property="Padding" Value="10,12" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="16,5,16,5" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        Name="Border"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        BlurRadius="15"
+                                        Direction="0"
+                                        Opacity="1"
+                                        ShadowDepth="5"
+                                        Color="BlueViolet" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="BlueViolet" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SidebarCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0,45,45,0" />
+        <Setter Property="Margin" Value="0,20,20,20" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                    BlurRadius="35"
+                    Direction="0"
+                    Opacity="1"
+                    ShadowDepth="0"
+                    Color="BlueViolet" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ContentCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="Margin" Value="0,20,20,20" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                    BlurRadius="35"
+                    Direction="0"
+                    Opacity="1"
+                    ShadowDepth="0"
+                    Color="BlueViolet" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="14" />
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageUpCommand" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <!-- Додано прозорий Grid для розширення невидимої зони кліку -->
+                                                    <Grid Background="Transparent" Width="24" Cursor="Hand">
+                                                        <Border
+            x:Name="ThumbBorder"
+            Width="6"
+            Margin="0,2,0,2"
+            HorizontalAlignment="Center"
+            Background="BlueViolet"
+            CornerRadius="3"
+            Opacity="0.4">
+                                                            <Border.Effect>
+                                                                <DropShadowEffect
+                    BlurRadius="5"
+                    Direction="0"
+                    Opacity="1"
+                    ShadowDepth="0"
+                    Color="BlueViolet" />
+                                                            </Border.Effect>
+                                                        </Border>
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.8" />
+                                                            <Setter TargetName="ThumbBorder" Property="Width" Value="8" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsDragging" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="1.0" />
+                                                            <Setter TargetName="ThumbBorder" Property="Width" Value="8" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageDownCommand" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="Height" Value="14" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track" IsDirectionReversed="False">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageLeftCommand" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Border
+                                                        x:Name="ThumbBorder"
+                                                        Height="6"
+                                                        Margin="2,0,2,0"
+                                                        VerticalAlignment="Center"
+                                                        Background="BlueViolet"
+                                                        CornerRadius="3"
+                                                        Opacity="0.4">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect
+                                                                BlurRadius="5"
+                                                                Direction="0"
+                                                                Opacity="1"
+                                                                ShadowDepth="0"
+                                                                Color="BlueViolet" />
+                                                        </Border.Effect>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.8" />
+                                                            <Setter TargetName="ThumbBorder" Property="Height" Value="8" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsDragging" Value="True">
+                                                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="1.0" />
+                                                            <Setter TargetName="ThumbBorder" Property="Height" Value="8" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageRightCommand" Focusable="False">
+                                            <RepeatButton.Template>
+                                                <ControlTemplate TargetType="RepeatButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </RepeatButton.Template>
+                                        </RepeatButton>
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="PageHeaderTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,20" />
+    </Style>
+
+    <Style x:Key="SpacePanelBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                    BlurRadius="15"
+                    Direction="0"
+                    Opacity="1"
+                    ShadowDepth="0"
+                    Color="BlueViolet" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SpaceProgressBarStyle" TargetType="ProgressBar">
+        <Setter Property="Height" Value="4" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="BlueViolet" />
+    </Style>
+
+    <Style x:Key="SpaceDataGridStyle" TargetType="DataGrid">
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource SpaceBackgroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="GridLinesVisibility" Value="Horizontal" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="HorizontalGridLinesBrush" Value="#338A2BE2" />
+        <Setter Property="RowBackground" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="RowHeight" Value="55" />
+
+        <Setter Property="CanUserReorderColumns" Value="False" />
+
+        <Setter Property="CanUserResizeColumns" Value="False" />
+
+        <Setter Property="CanUserResizeRows" Value="False" />
+
+        <Setter Property="CanUserSortColumns" Value="False" />
+    </Style>
+
+    <Style TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#0D8A2BE2" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#1A8A2BE2" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        BorderThickness="0">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+        <Setter Property="Foreground" Value="BlueViolet" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Padding" Value="10,15" />
+        <Setter Property="BorderThickness" Value="0,0,0,2" />
+        <Setter Property="BorderBrush" Value="BlueViolet" />
+    </Style>
+
+    <Style x:Key="SpaceDataGridActionButtonBase" TargetType="Button">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        Name="BtnBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="6">
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Opacity" Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="SpaceActionSuccessButton"
+        BasedOn="{StaticResource SpaceDataGridActionButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="#2ECC71" />
+    </Style>
+
+    <Style
+        x:Key="SpaceActionWarningButton"
+        BasedOn="{StaticResource SpaceDataGridActionButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="#F39C12" />
+    </Style>
+
+    <Style
+        x:Key="SpaceActionInfoButton"
+        BasedOn="{StaticResource SpaceDataGridActionButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="#3498DB" />
+    </Style>
+
+    <Style
+        x:Key="SpaceActionDangerButton"
+        BasedOn="{StaticResource SpaceDataGridActionButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="#E74C3C" />
+    </Style>
+
+    <Style x:Key="SpaceDialogHeaderTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="BlueViolet" />
+        <Setter Property="Margin" Value="0,0,0,20" />
+    </Style>
+
+    <Style x:Key="SpaceDialogButtonBase" TargetType="Button">
+        <Setter Property="Height" Value="38" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        Name="Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10">
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Opacity" Value="0.85" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Opacity" Value="0.7" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="#E5E7EB" />
+                            <Setter Property="Foreground" Value="#9CA3AF" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="SpaceDialogPrimaryButton"
+        BasedOn="{StaticResource SpaceDialogButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="BlueViolet" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Padding" Value="20,0" />
+    </Style>
+
+    <Style
+        x:Key="SpaceDialogSecondaryButton"
+        BasedOn="{StaticResource SpaceDialogButtonBase}"
+        TargetType="Button">
+        <Setter Property="Background" Value="#209CA3AF" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Padding" Value="15,0" />
+    </Style>
+</ResourceDictionary>

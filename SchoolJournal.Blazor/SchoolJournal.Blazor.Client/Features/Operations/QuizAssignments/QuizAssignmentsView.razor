@@ -1,0 +1,152 @@
+﻿@using SchoolJournal.Client.Core.Features.Operations.QuizAssignments
+@implements IDisposable
+
+<div class="assignments-container">
+
+    <div class="assignments-header">
+        <h2 class="page-title">Журнал призначень завдань</h2>
+    </div>
+
+    <div class="search-panel space-panel-border">
+        <div class="search-group">
+            <span class="form-label mb-0 mr-2">Оберіть тест:</span>
+            <select class="space-input search-select" @bind="ViewModel.SearchQuizId">
+                <option value="">-- Оберіть тест --</option>
+                @foreach (var quiz in ViewModel.AvailableQuizzes)
+                {
+                    <option value="@quiz.QuizId">@quiz.Title</option>
+                }
+            </select>
+            <button class="btn-info ml-2" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.LoadAssignmentsByQuizCommand.Execute(null)">🔍 Шукати</button>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+        {
+            <span class="error-text ml-3">@ViewModel.ErrorMessage</span>
+        }
+    </div>
+
+    <div class="table-container mt-3">
+        @if (ViewModel.IsLoading && !ViewModel.IsEditFormOpen && !ViewModel.IsResultsOpen)
+        {
+            <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+        }
+
+        <table class="space-table">
+            <thead>
+                <tr>
+                    <th style="width: 100px;">Клас</th>
+                    <th style="width: 160px;">Дата призначення</th>
+                    <th style="width: 160px;">Дедлайн</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in ViewModel.Assignments)
+                {
+                    <tr>
+                        <td class="font-bold">@assignment.ClassName</td>
+                        <td>@assignment.AssignedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@(assignment.DueDate?.ToString("dd.MM.yyyy HH:mm") ?? "Без дедлайну")</td>
+                        <td class="actions-cell">
+                            <button class="btn-success" @onclick="() => ViewModel.OpenTakeQuizCommand.Execute(assignment)">▶️ Пройти</button>
+                            <button class="btn-warning" @onclick="() => ViewModel.OpenEditFormCommand.Execute(assignment)">✏️ Ред.</button>
+                            <button class="btn-info" @onclick="() => ViewModel.OpenResultsCommand.Execute(assignment)">📊 Рез-ти</button>
+                            <button class="btn-danger" @onclick="() => ViewModel.DeleteAssignmentCommand.Execute(assignment)">✖ Скасувати</button>
+                        </td>
+                    </tr>
+                }
+                @if (ViewModel.Assignments.Count == 0 && !ViewModel.IsLoading)
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-secondary">Призначень не знайдено. Оберіть тест та натисніть "Шукати".</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewModel.IsEditFormOpen)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content space-panel-border modal-small">
+                <h3 class="modal-title">Зміна дедлайну</h3>
+
+                <label class="form-label">Новий термін здачі:</label>
+                <input type="date" class="space-input mb-3" @bind="ViewModel.EditDueDate" @bind:format="yyyy-MM-dd" />
+
+                <div class="modal-actions mt-2">
+                    <button class="btn-secondary" @onclick="() => ViewModel.CloseEditFormCommand.Execute(null)">Скасувати</button>
+                    <button class="btn-primary" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.SaveEditFormCommand.Execute(null)">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewModel.IsResultsOpen)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content space-panel-border modal-large">
+                <h3 class="modal-title">📊 Результати тестування</h3>
+
+                <div class="modal-scroll-area">
+                    <table class="space-table compact-table">
+                        <thead>
+                            <tr>
+                                <th>Учень</th>
+                                <th style="width: 80px; text-align: center;">Оцінка</th>
+                                <th style="width: 80px; text-align: center;">Макс.</th>
+                                <th style="width: 140px;">Дата здачі</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var result in ViewModel.SubmissionResults)
+                            {
+                                <tr>
+                                    <td class="font-bold">@result.StudentFullName</td>
+                                    <td class="text-center score-text">@result.Score</td>
+                                    <td class="text-center">@result.MaxScore</td>
+                                    <td>@result.SubmittedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                </tr>
+                            }
+                            @if (ViewModel.SubmissionResults.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-secondary">Ще ніхто не здав цей тест.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-actions right-align mt-3">
+                    <button class="btn-secondary" @onclick="() => ViewModel.CloseResultsCommand.Execute(null)">Закрити</button>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public QuizAssignmentsViewModel ViewModel { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}

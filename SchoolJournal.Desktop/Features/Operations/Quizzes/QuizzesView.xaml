@@ -1,0 +1,226 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.Quizzes.QuizzesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <WrapPanel
+            Grid.Row="0"
+            Margin="0,0,0,15"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+
+            <TextBlock
+                Margin="0,0,20,10"
+                VerticalAlignment="Center"
+                Style="{StaticResource PageHeaderTextStyle}"
+                Text="Бібліотека завдань" />
+
+            <TextBlock
+                Margin="0,0,0,10"
+                VerticalAlignment="Center"
+                Style="{StaticResource ErrorTextStyle}"
+                Text="{Binding ErrorMessage}"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+        </WrapPanel>
+
+        <!--  Основна таблиця  -->
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding Quizzes}"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            Style="{StaticResource SpaceDataGridStyle}">
+            <DataGrid.Columns>
+
+                <!--  ЖОРСТКА ШИРИНА 350. Більше ніяких нескінченних розтягувань  -->
+                <DataGridTextColumn
+                    Width="350"
+                    Binding="{Binding Title}"
+                    Header="Назва завдання">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="Margin" Value="10,0" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <!--  Дата створення  -->
+                <DataGridTextColumn
+                    Width="140"
+                    Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}"
+                    Header="Створено" />
+
+                <!--  Дії  -->
+                <DataGridTemplateColumn Width="410" Header="Дії">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Command="{Binding DataContext.OpenEditFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="✏️ Редагувати"
+                                    Style="{StaticResource SpaceActionWarningButton}" />
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Command="{Binding DataContext.OpenAssignFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="🎓 Призначити"
+                                    Style="{StaticResource SpaceActionSuccessButton}" />
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Command="{Binding DataContext.OpenQuestionsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="❓ Питання"
+                                    Style="{StaticResource SpaceActionInfoButton}" />
+                                <Button
+                                    Command="{Binding DataContext.DeleteQuizCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="✖"
+                                    Style="{StaticResource SpaceActionDangerButton}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ProgressBar
+            Grid.Row="1"
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Style="{StaticResource SpaceProgressBarStyle}"
+            Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+
+        <!--  Модальне вікно: Створення / Редагування тесту  -->
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="100"
+            Background="{StaticResource SpaceModalOverlayBrush}"
+            Visibility="{Binding IsFormOpen, Converter={StaticResource UniversalVis}}">
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Border
+                    MaxWidth="450"
+                    Margin="20"
+                    Padding="25"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource SpacePanelBorderStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SpaceDialogHeaderTextStyle}" Text="{Binding FormTitle}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Назва завдання:" />
+                        <TextBox Margin="0,0,0,15" Text="{Binding FormQuizTitle, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Предмет:" />
+                        <ComboBox
+                            Margin="0,0,0,25"
+                            DisplayMemberPath="SubjectName"
+                            ItemsSource="{Binding AvailableSubjects}"
+                            SelectedValue="{Binding FormSubjectId, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedValuePath="SubjectId" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding CloseFormCommand}"
+                                Content="Скасувати"
+                                Style="{StaticResource SpaceDialogSecondaryButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding SaveFormCommand}"
+                                Content="Зберегти"
+                                Style="{StaticResource SpaceDialogPrimaryButton}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+
+        <!--  Модальне вікно: Призначити тест класу  -->
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="102"
+            Background="{StaticResource SpaceModalOverlayBrush}"
+            Visibility="{Binding IsAssignFormOpen, Converter={StaticResource UniversalVis}}">
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Border
+                    MaxWidth="400"
+                    Margin="20"
+                    Padding="25"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource SpacePanelBorderStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SpaceDialogHeaderTextStyle}" Text="Призначити тест класу" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Клас:" />
+                        <ComboBox
+                            Margin="0,0,0,15"
+                            DisplayMemberPath="ClassName"
+                            ItemsSource="{Binding AvailableClasses}"
+                            SelectedValue="{Binding AssignClassId, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedValuePath="ClassId" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Дедлайн:" />
+                        <DatePicker Margin="0,0,0,25" SelectedDate="{Binding AssignDueDate}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding CloseAssignFormCommand}"
+                                Content="Скасувати"
+                                Style="{StaticResource SpaceDialogSecondaryButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding SaveAssignFormCommand}"
+                                Content="Призначити"
+                                Style="{StaticResource SpaceDialogPrimaryButton}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

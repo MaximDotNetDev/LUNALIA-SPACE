@@ -1,0 +1,67 @@
+﻿/* Світла тема (Light - за замовчуванням) */
+:root, [data-theme="Light"] {
+    --space-background: #D6EAF8;
+    --surface-color: #FFFFFF;
+    --accent-color: #5E35B1;
+    --accent-hover-color: #4527A0;
+    --text-primary: #001F3F;
+    --text-secondary: #4A5568;
+    --error-color: #DC2626;
+    --border-color: #A3BFDB;
+}
+
+/* Космічна тема (Cosmic) */
+[data-theme="Cosmic"] {
+    --space-background: #0F172A;
+    --surface-color: #1E293B;
+    --accent-color: #5E35B1;
+    --accent-hover-color: #4527A0;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --error-color: #F87171;
+    --border-color: #334155;
+}
+
+/* Космічна тема (Cosmic - за замовчуванням у тебе) */
+[data-theme="Cosmic"] {
+    --space-background: #0F172A;
+    --surface-color: #1E293B;
+    --accent-color: #5E35B1;
+    --accent-hover-color: #4527A0;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --error-color: #F87171;
+    --border-color: #334155;
+}
+
+/* Спокійна тема (CalmEyes) */
+[data-theme="Calm"] {
+    --space-background: #F8F9FA;
+    --surface-color: #FFFFFF;
+    --accent-color: #5E35B1;
+    --accent-hover-color: #4527A0;
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --border-color: #E2E8F0;
+    --error-color: #EF4444;
+}
+
+/* Зелена тема (Green) */
+[data-theme="Green"] {
+    --space-background: #c0fac5;
+    --surface-color: #FFFFFF;
+    --accent-color: #16A34A;
+    --accent-hover-color: #15803D;
+    --text-primary: #064E3B;
+    --text-secondary: #065F46;
+    --error-color: #DC2626;
+    --border-color: #BBF7D0;
+}
+
+/* Глобальні стилі, які використовують ці змінні */
+body {
+    background-color: var(--space-background);
+    color: var(--text-primary);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

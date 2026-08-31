@@ -1,0 +1,97 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.People.PeopleView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:parentView="clr-namespace:SchoolJournal.Desktop.Features.Core.Parents"
+    xmlns:parentVm="clr-namespace:SchoolJournal.Client.Core.Features.Core.Parents;assembly=SchoolJournal.Client.Core"
+    xmlns:studentParentsView="clr-namespace:SchoolJournal.Desktop.Features.Core.StudentParents"
+    xmlns:studentParentsVm="clr-namespace:SchoolJournal.Client.Core.Features.Core.StudentParents;assembly=SchoolJournal.Client.Core"
+    xmlns:studentsView="clr-namespace:SchoolJournal.Desktop.Features.Core.Students"
+    xmlns:studentsVm="clr-namespace:SchoolJournal.Client.Core.Features.Core.Students;assembly=SchoolJournal.Client.Core"
+    xmlns:teacherView="clr-namespace:SchoolJournal.Desktop.Features.Core.Teachers"
+    xmlns:teacherVm="clr-namespace:SchoolJournal.Client.Core.Features.Core.Teachers;assembly=SchoolJournal.Client.Core">
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type teacherVm:TeachersViewModel}">
+            <teacherView:TeachersView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type studentsVm:StudentsViewModel}">
+            <studentsView:StudentsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type parentVm:ParentsViewModel}">
+            <parentView:ParentsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type studentParentsVm:StudentParentsViewModel}">
+            <studentParentsView:StudentParentsView />
+        </DataTemplate>
+
+        <Style x:Key="PeopleTabButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Background" Value="#ECF0F1" />
+            <Setter Property="Foreground" Value="#2C3E50" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#BDC3C7" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel
+                Margin="20,20,10,20"
+                Background="Transparent"
+                Orientation="Vertical">
+                <Expander
+                    Margin="0,0,0,10"
+                    Background="#FAFAFA"
+                    FontWeight="Bold"
+                    Foreground="#2C3E50"
+                    Header="👥 Персонал та Контингент"
+                    IsExpanded="True">
+                    <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                        <Button
+                            Command="{Binding NavigateToTeachersCommand}"
+                            Content="👨‍🏫 Вчителі"
+                            Style="{StaticResource PeopleTabButtonStyle}" />
+
+                        <Button
+                            Command="{Binding NavigateToStudentsCommand}"
+                            Content="🎓 Учні"
+                            Style="{StaticResource PeopleTabButtonStyle}" />
+
+                        <Button
+                            Command="{Binding NavigateToParentsCommand}"
+                            Content="👨‍👩‍👧 Батьки"
+                            Style="{StaticResource PeopleTabButtonStyle}" />
+
+                        <Button
+                            Command="{Binding NavigateToStudentParentsCommand}"
+                            Content="👨‍👩‍👦 Зв'язки"
+                            Style="{StaticResource PeopleTabButtonStyle}" />
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border
+            Grid.Column="1"
+            Margin="20"
+            Background="White"
+            CornerRadius="5">
+            <ContentControl Content="{Binding CurrentPeopleView}" />
+        </Border>
+    </Grid>
+</UserControl>

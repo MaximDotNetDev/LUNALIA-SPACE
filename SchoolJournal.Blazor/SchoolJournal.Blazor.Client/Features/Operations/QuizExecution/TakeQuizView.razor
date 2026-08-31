@@ -1,0 +1,223 @@
+﻿@using SchoolJournal.Client.Core.Features.Operations.QuizExecution
+@implements IDisposable
+
+<div class="take-quiz-container">
+
+    @if (ViewModel.IsLoading)
+    {
+        <div class="modal-overlay">
+            <div class="loading-box space-panel-border">
+                <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+                <span class="accent-text font-bold mt-2">Обробка даних...</span>
+            </div>
+        </div>
+    }
+
+    @if (!ViewModel.IsSubmitted)
+    {
+        <div class="questions-list">
+            @foreach (var q in ViewModel.Questions)
+            {
+                <div class="question-card space-panel-border">
+                    <div class="question-header">
+                        <span class="question-text">@q.Question.QuestionText</span>
+                        <div class="points-badge">@q.Question.Points б.</div>
+                    </div>
+
+                    <div class="question-body">
+                        @if (q.IsCrossword)
+                        {
+                            <div class="crossword-container">
+                                <div class="crossword-grid" style="grid-template-columns: repeat(@q.CrosswordWidth, 1fr);">
+                                    @foreach (var cell in q.CrosswordCells)
+                                    {
+                                        @if (cell.IsEmpty)
+                                        {
+                                            <div class="crossword-cell empty"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="crossword-cell active">
+                                                <span class="cell-number">@cell.Number</span>
+                                                <input type="text" maxlength="1" class="cell-input" @bind="cell.UserInput" @bind:event="oninput" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                                <div class="crossword-clues">
+                                    @foreach (var word in q.CrosswordWords)
+                                    {
+                                        <div class="clue-item">
+                                            <div class="clue-badge">@word.Number</div>
+                                            <div class="clue-content">
+                                                <span class="clue-direction">@word.Direction</span>
+                                                <span class="clue-text">@word.Clue</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (q.IsFillword)
+                        {
+                            <div class="fillword-container">
+                                <div class="fillword-grid" style="grid-template-columns: repeat(@q.FillwordWidth, 1fr);">
+                                    @foreach (var cell in q.FillwordCells)
+                                    {
+                                        <div class="fillword-cell @(cell.IsSelected ? "selected" : string.Empty)"
+                                             style="background-color: @(cell.IsSelected ? cell.SelectionColor : "transparent");"
+                                             @onmousedown="() => FillwordCell_MouseDown(cell)"
+                                             @onmouseenter="(e) => FillwordCell_MouseEnter(cell, e)">
+                                            <span class="cell-letter">@cell.Letter</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="fillword-clues">
+                                    @foreach (var word in q.FillwordWords)
+                                    {
+                                        <div class="clue-item">
+                                            <div class="clue-badge fillword-badge">@word.Number</div>
+                                            <div class="clue-content">
+                                                <span class="clue-direction">Знайдіть слово за описом:</span>
+                                                <span class="clue-text">@word.Clue</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (q.HasOptions && !q.IsMultipleChoice)
+                        {
+                            <div class="options-list">
+                                @foreach (var opt in q.Options)
+                                {
+                                    <label class="radio-option">
+                                        <input type="radio" name="group_@q.Question.QuestionId" checked="@opt.IsSelected" @onchange="@((ChangeEventArgs e) => opt.IsSelected = true)" />
+                                        <span class="option-text">@opt.Text</span>
+                                    </label>
+                                }
+                            </div>
+                        }
+                        else if (q.HasOptions && q.IsMultipleChoice)
+                        {
+                            <div class="options-list">
+                                @foreach (var opt in q.Options)
+                                {
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" @bind="opt.IsSelected" />
+                                        <span class="option-text">@opt.Text</span>
+                                    </label>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <textarea class="space-input text-answer" rows="2" @bind="q.UserAnswer" @bind:event="oninput" placeholder="Введіть вашу відповідь..."></textarea>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="footer-actions">
+            <button class="btn-success submit-btn" @onclick="() => ViewModel.SubmitQuizCommand.Execute(null)">
+                ✅ Здати
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="success-screen">
+            <div class="success-card space-panel-border">
+                <img class="success-image" src="/images/Sova.png" alt="Sova" />
+
+                <h2 class="page-title mt-3">Завдання завершено!</h2>
+
+                <div class="score-badge mt-4">
+                    <span class="score-label">Підсумок:</span>
+                    <span class="score-value">@ViewModel.FinalScore</span>
+                    <span class="score-divider"> / </span>
+                    <span class="score-max">@ViewModel.MaxScore</span>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+    {
+        <div class="error-banner">
+            <span class="error-text">@ViewModel.ErrorMessage</span>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public TakeQuizViewModel ViewModel { get; set; } = null!;
+
+    private string _currentFillwordColor = "transparent";
+    private int _fillwordColorIndex = 0;
+    private FillwordCellItem? _lastFillwordCell;
+
+    private readonly string[] _fillwordPalette = [
+        "#FF3B30", "#34C759", "#007AFF", "#AF52DE", "#FF9500",
+        "#30B0C7", "#E22653", "#8D6E63", "#26A69A", "#D4A800",
+        "#FF2D55", "#5856D6", "#5AC8FA", "#F0A500", "#4CD964",
+        "#FF7043", "#7E57C2", "#EC407A", "#009688", "#607D8B"
+    ];
+
+    protected override void OnInitialized()
+    {
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void FillwordCell_MouseDown(FillwordCellItem cell)
+    {
+        if (cell.IsSelected)
+        {
+            cell.IsSelected = false;
+            cell.SelectionColor = "transparent";
+            _lastFillwordCell = null;
+        }
+        else
+        {
+            bool isAdjacent = _lastFillwordCell != null && _lastFillwordCell.IsSelected &&
+                              (Math.Abs(_lastFillwordCell.Row - cell.Row) + Math.Abs(_lastFillwordCell.Column - cell.Column) == 1);
+
+            if (!isAdjacent)
+            {
+                _currentFillwordColor = _fillwordPalette[_fillwordColorIndex % _fillwordPalette.Length];
+                _fillwordColorIndex++;
+            }
+
+            cell.IsSelected = true;
+            cell.SelectionColor = _currentFillwordColor;
+            _lastFillwordCell = cell;
+        }
+    }
+
+    private void FillwordCell_MouseEnter(FillwordCellItem cell, Microsoft.AspNetCore.Components.Web.MouseEventArgs e)
+    {
+        if (e.Buttons == 1 && !cell.IsSelected)
+        {
+            cell.IsSelected = true;
+            cell.SelectionColor = _currentFillwordColor;
+            _lastFillwordCell = cell;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}

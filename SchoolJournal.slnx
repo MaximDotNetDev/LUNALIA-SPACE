@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="SchoolJournal.Api/SchoolJournal.Api.csproj" Id="5d0abbb3-d8d8-4a27-98d3-e1401ee3afd0" />
+  <Project Path="SchoolJournal.Application/SchoolJournal.Application.csproj" Id="adf14ffd-80f8-46bb-825b-a50fbc0f5f90" />
+  <Project Path="SchoolJournal.Blazor/SchoolJournal.Blazor.Client/SchoolJournal.Blazor.Client.csproj" Id="0534111f-87ab-4617-bcd2-443cf4a04958" />
+  <Project Path="SchoolJournal.Blazor/SchoolJournal.Blazor/SchoolJournal.Blazor.csproj" Id="a8ce241f-c193-4b24-95d9-c209a24f5e17" />
+  <Project Path="SchoolJournal.Client.Core/SchoolJournal.Client.Core.csproj" Id="32d78886-3709-4c71-8c91-f8ac21754ec1" />
+  <Project Path="SchoolJournal.Contracts/SchoolJournal.Contracts.csproj" Id="d20ebebd-5e8d-47e5-8d0b-f45c23fe804b" />
+  <Project Path="SchoolJournal.Desktop/SchoolJournal.Desktop.csproj" Id="2b08704e-5ce6-4311-8314-199340c3e27f" />
+  <Project Path="SchoolJournal.Domain/SchoolJournal.Domain.csproj" />
+  <Project Path="SchoolJournal.Infrastructure/SchoolJournal.Infrastructure.csproj" Id="60df3e72-90d2-4ca1-b953-035abaec86c3" />
+  <Project Path="SchoolJournal.IntegrationTests/SchoolJournal.IntegrationTests.csproj" Id="a765cc7f-f51b-4e72-8753-aa89694bf1c3" />
+</Solution>

@@ -1,0 +1,79 @@
+﻿@using SchoolJournal.Client.Core.Features.Operations.QuizAssignments
+@implements IDisposable
+
+<div class="student-assignments-container">
+
+
+    @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+    {
+        <div class="error-banner mb-3">
+            <span class="error-text">@ViewModel.ErrorMessage</span>
+        </div>
+    }
+
+    <div class="table-container">
+        @if (ViewModel.IsLoading)
+        {
+            <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+        }
+
+        <table class="space-table">
+            <thead>
+                <tr>
+                    <th style="width: 300px;">Назва завдань</th>
+                    <th style="width: 150px;">Дата призначення</th>
+                    <th style="width: 200px;">Здати до</th>
+                    <th style="width: 180px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in ViewModel.Assignments)
+                {
+                    <tr>
+                        <td class="font-bold text-wrap">@assignment.QuizTitle</td>
+                        <td>@assignment.AssignedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@(assignment.DueDate?.ToString("dd.MM.yyyy HH:mm") ?? "Без дедлайну")</td>
+                        <td class="actions-cell">
+                            <button class="btn-success" @onclick="() => ViewModel.StartQuizCommand.Execute(assignment)">
+                                ▶️ Почати завдання
+                            </button>
+                        </td>
+                    </tr>
+                }
+
+                @if (ViewModel.Assignments.Count == 0 && !ViewModel.IsLoading && string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-secondary">
+                            Ура! Для вашого класу поки немає призначених тестів 🎉
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public StudentAssignmentsViewModel ViewModel { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}

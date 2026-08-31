@@ -1,0 +1,64 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Schedule.ScheduleView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fixedSchedulesView="clr-namespace:SchoolJournal.Desktop.Features.Operations.FixedSchedules"
+    xmlns:fixedSchedulesVm="clr-namespace:SchoolJournal.Client.Core.Features.Operations.FixedSchedules;assembly=SchoolJournal.Client.Core">
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type fixedSchedulesVm:FixedSchedulesViewModel}">
+            <fixedSchedulesView:FixedSchedulesView />
+        </DataTemplate>
+
+        <Style x:Key="ScheduleTabButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Background" Value="#ECF0F1" />
+            <Setter Property="Foreground" Value="#2C3E50" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#BDC3C7" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel
+                Margin="20,20,10,20"
+                Background="Transparent"
+                Orientation="Vertical">
+                <Expander
+                    Margin="0,0,0,10"
+                    Background="#FAFAFA"
+                    FontWeight="Bold"
+                    Foreground="#2C3E50"
+                    Header="📅 Розклад"
+                    IsExpanded="True">
+                    <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                        <Button
+                            Command="{Binding NavigateToFixedSchedulesCommand}"
+                            Content="📌 Сталий розклад"
+                            Style="{StaticResource ScheduleTabButtonStyle}" />
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border
+            Grid.Column="1"
+            Margin="20"
+            Background="White"
+            CornerRadius="5">
+            <ContentControl Content="{Binding CurrentScheduleView}" />
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,574 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.QuizExecution.TakeQuizView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="Transparent"
+    mc:Ignorable="d">
+    
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <!-- Головний Grid -->
+    <Grid Margin="0" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        
+        <!-- ЄДИНИЙ ГОЛОВНИЙ СВЯТИЙ СУКА СКРОЛ, який крутить всю сторінку -->
+        <ScrollViewer
+            Grid.Row="1"
+            Background="Transparent"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <ItemsControl ItemsSource="{Binding Questions}" Background="Transparent">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Margin="0,0,10,20"
+                            Padding="25"
+                            Style="{StaticResource SpacePanelBorderStyle}">
+                            <StackPanel Background="Transparent">
+
+                                <!-- ВІДНОВЛЕНИЙ БЛОК: Текст запитання та бали -->
+                                <Grid Margin="0,0,0,20" Background="Transparent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        FontSize="18"
+                                        FontWeight="Medium"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        Text="{Binding Question.QuestionText}"
+                                        TextWrapping="Wrap" />
+
+                                    <Border
+                                        Grid.Column="1"
+                                        Margin="15,0,0,0"
+                                        Padding="10,5"
+                                        VerticalAlignment="Top"
+                                        Background="{DynamicResource SurfaceBrush}"
+                                        CornerRadius="6">
+                                        <TextBlock
+                                            FontSize="14"
+                                            FontWeight="Bold"
+                                            Style="{StaticResource AccentTextStyle}"
+                                            Text="{Binding Question.Points, StringFormat='{}{0} б.'}" />
+                                    </Border>
+                                </Grid>
+                                <!-- КІНЕЦЬ ВІДНОВЛЕНОГО БЛОКУ -->
+
+                                <ContentControl>
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <!-- Далі йде твій код з TextBox, кросвордом, радіокнопками тощо... -->
+                                            
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <Grid Background="Transparent">
+
+                                                            <TextBox
+                                                                MinHeight="50"
+                                                                AcceptsReturn="True"
+                                                                Text="{Binding UserAnswer, UpdateSourceTrigger=PropertyChanged}"
+                                                                TextWrapping="Wrap">
+                                                                <TextBox.Style>
+                                                                    <Style BasedOn="{StaticResource SpaceInputBase}" TargetType="TextBox">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers>
+                                                                            <MultiDataTrigger>
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding HasOptions}" Value="False" />
+                                                                                    <Condition Binding="{Binding IsCrossword}" Value="False" />
+                                                                                    <Condition Binding="{Binding IsFillword}" Value="False" />
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </MultiDataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBox.Style>
+                                                            </TextBox>
+
+                                                            <Grid Margin="0,10,0,0" Background="Transparent">
+                                                                <Grid.Style>
+                                                                    <Style TargetType="Grid">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsCrossword}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Grid.Style>
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="1.5*" />
+                                                                    <ColumnDefinition Width="1*" />
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <!-- Ліва частина: Кросворд БЕЗ SCROLLVIEWER. 
+                                                                     Viewbox сам піджене розмір і не блокуватиме скрол мишкою! -->
+                                                                <Viewbox 
+                                                                    Grid.Column="0"
+                                                                    Margin="0,0,20,0"
+                                                                    Stretch="Uniform" 
+                                                                    HorizontalAlignment="Left" 
+                                                                    VerticalAlignment="Top">
+
+                                                                    <ItemsControl VerticalAlignment="Top" ItemsSource="{Binding CrosswordCells}" Background="Transparent">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <UniformGrid Columns="{Binding CrosswordWidth}" Background="Transparent" />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <Border
+                                                                                    Width="35"
+                                                                                    Height="35"
+                                                                                    BorderBrush="BlueViolet"
+                                                                                    BorderThickness="1">
+                                                                                    <Border.Style>
+                                                                                        <Style TargetType="Border">
+                                                                                            <Setter Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+                                                                                            <Style.Triggers>
+                                                                                                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                                                                    <Setter Property="Background" Value="Transparent" />
+                                                                                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                                                                                </DataTrigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </Border.Style>
+                                                                                    <Grid Background="Transparent">
+                                                                                        <TextBlock
+                                                                                            Margin="3,2,0,0"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            VerticalAlignment="Top"
+                                                                                            FontSize="10"
+                                                                                            FontWeight="SemiBold"
+                                                                                            Style="{StaticResource AccentTextStyle}"
+                                                                                            Text="{Binding Number}" />
+                                                                                        <TextBox
+                                                                                            HorizontalContentAlignment="Center"
+                                                                                            VerticalContentAlignment="Center"
+                                                                                            Background="Transparent"
+                                                                                            BorderThickness="0"
+                                                                                            CharacterCasing="Upper"
+                                                                                            FontSize="16"
+                                                                                            FontWeight="Bold"
+                                                                                            Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                                            MaxLength="1"
+                                                                                            TextChanged="CrosswordCell_TextChanged"
+                                                                                            PreviewKeyDown="CrosswordCell_PreviewKeyDown"
+                                                                                            Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}">                                                                                            <TextBox.Style>
+                                                                                                <Style TargetType="TextBox">
+                                                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                                                    <Style.Triggers>
+                                                                                                        <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                                                                        </DataTrigger>
+                                                                                                    </Style.Triggers>
+                                                                                                </Style>
+                                                                                            </TextBox.Style>
+                                                                                        </TextBox>
+                                                                                    </Grid>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </Viewbox>
+
+                                                                <!-- Права частина: Запитання (Вже без скролу, як і робили) -->
+                                                                <ItemsControl 
+                                                                    Grid.Column="1" 
+                                                                    HorizontalAlignment="Stretch" 
+                                                                    ItemsSource="{Binding CrosswordWords}" 
+                                                                    Background="Transparent">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <StackPanel Margin="0,0,0,15" Background="Transparent">
+                                                                                <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                                                                                    <Border
+                                                                                        Margin="0,0,8,0"
+                                                                                        Padding="8,4"
+                                                                                        Background="BlueViolet"
+                                                                                        CornerRadius="4">
+                                                                                        <TextBlock
+                                                                                            FontWeight="Bold"
+                                                                                            Foreground="White"
+                                                                                            Text="{Binding Number}" />
+                                                                                    </Border>
+                                                                                    <TextBlock
+                                                                                        VerticalAlignment="Center"
+                                                                                        FontSize="12"
+                                                                                        FontWeight="SemiBold"
+                                                                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                                        Text="{Binding Direction}" />
+                                                                                </StackPanel>
+                                                                                <TextBlock
+                                                                                    FontSize="15"
+                                                                                    Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                                    Text="{Binding Clue}"
+                                                                                    TextWrapping="Wrap" />
+                                                                            </StackPanel>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Grid>
+
+                                                            <!-- ФІЛВОРД -->
+                                                            <Grid Margin="0,10,0,0" Background="Transparent">
+                                                                <Grid.Style>
+                                                                    <Style TargetType="Grid">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsFillword}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Grid.Style>
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="1.5*" />
+                                                                    <ColumnDefinition Width="1*" />
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <!-- Ліва частина: Сітка філворду -->
+                                                                <Viewbox 
+                                                                    Grid.Column="0"
+                                                                    Margin="0,0,20,0"
+                                                                    Stretch="Uniform" 
+                                                                    HorizontalAlignment="Left" 
+                                                                    VerticalAlignment="Top">
+
+                                                                    <ItemsControl VerticalAlignment="Top" ItemsSource="{Binding FillwordCells}" Background="Transparent">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <UniformGrid Columns="{Binding FillwordWidth}" Background="Transparent" />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <Border
+                                                                                    Width="40"
+                                                                                    Height="40"
+                                                                                    BorderThickness="1"
+                                                                                    BorderBrush="BlueViolet"
+                                                                                    Background="{Binding SelectionColor}"
+                                                                                    MouseLeftButtonDown="FillwordCell_MouseDown"
+                                                                                    MouseEnter="FillwordCell_MouseEnter">
+                                                                                    <Border.Style>
+                                                                                        <Style TargetType="Border">
+                                                                                            <Style.Triggers>
+                                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                                    <Setter Property="Opacity" Value="0.8" />
+                                                                                                </Trigger>
+                                                                                                <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                                                                                    <Setter Property="Background" Value="{DynamicResource SpaceBackgroundBrush}" />
+                                                                                                </DataTrigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </Border.Style>
+                                                                                    <TextBlock 
+                                                                                        Text="{Binding Letter}"
+                                                                                        HorizontalAlignment="Center"
+                                                                                        VerticalAlignment="Center"
+                                                                                        FontSize="18"
+                                                                                        FontWeight="Bold">
+                                                                                        <TextBlock.Style>
+                                                                                            <Style TargetType="TextBlock">
+                                                                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                                                                                <Style.Triggers>
+                                                                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                                                        <Setter Property="Foreground" Value="White" />
+                                                                                                    </DataTrigger>
+                                                                                                </Style.Triggers>
+                                                                                            </Style>
+                                                                                        </TextBlock.Style>
+                                                                                    </TextBlock>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </Viewbox>
+
+                                                                <!-- Права частина: Запитання (слова для пошуку) -->
+                                                                <ItemsControl 
+                                                                    Grid.Column="1" 
+                                                                    HorizontalAlignment="Stretch" 
+                                                                    ItemsSource="{Binding FillwordWords}" 
+                                                                    Background="Transparent">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <StackPanel Margin="0,0,0,15" Background="Transparent">
+                                                                                <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                                                                                    <Border
+                                                                                        Margin="0,0,8,0"
+                                                                                        Padding="8,4"
+                                                                                        Background="#2ECC71"
+                                                                                        CornerRadius="4">
+                                                                                        <TextBlock
+                                                                                            FontWeight="Bold"
+                                                                                            Foreground="White"
+                                                                                            Text="{Binding Number}" />
+                                                                                    </Border>
+                                                                                    <TextBlock
+                                                                                        VerticalAlignment="Center"
+                                                                                        FontSize="14"
+                                                                                        FontWeight="Bold"
+                                                                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                                        Text="Знайдіть слово за описом:" />
+                                                                                </StackPanel>
+                                                                                <TextBlock
+                                                                                    FontSize="15"
+                                                                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                                    Text="{Binding Clue}"
+                                                                                    TextWrapping="Wrap" />
+                                                                            </StackPanel>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Grid>
+                                                            
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+
+                                            <!-- Тестові питання (Варіанти відповідей) -->
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding HasOptions}" Value="True" />
+                                                        <Condition Binding="{Binding IsMultipleChoice}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ContentControl">
+                                                                <ItemsControl ItemsSource="{Binding Options}" Background="Transparent">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <RadioButton
+                                                                                Margin="0,0,0,10"
+                                                                                FontSize="16"
+                                                                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                                GroupName="{Binding DataContext.Question.QuestionId, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
+                                                                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                                                            </RadioButton>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </MultiDataTrigger>
+
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding HasOptions}" Value="True" />
+                                                        <Condition Binding="{Binding IsMultipleChoice}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ContentControl">
+                                                                <ItemsControl ItemsSource="{Binding Options}" Background="Transparent">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <CheckBox
+                                                                                Margin="0,0,0,10"
+                                                                                FontSize="16"
+                                                                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                                IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
+                                                                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                                                            </CheckBox>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Екран успішного завершення -->
+        <Grid
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Border
+    Padding="60,50"
+    Style="{StaticResource SpacePanelBorderStyle}">
+                <StackPanel HorizontalAlignment="Center">
+
+                    <!-- Замість TextBlock з емодзі вставляємо Image -->
+                    <Image
+    Width="350"
+    Height="250"
+    HorizontalAlignment="Center"
+    Source="pack://application:,,,/SchoolJournal.Desktop;component/Resources/Images/Sova.png" />
+                    
+                    <TextBlock
+            Margin="0,0,0,10"
+            HorizontalAlignment="Center"
+            Style="{StaticResource PageHeaderTextStyle}"
+            Text="Завдання завершено!" />
+
+                    <Border
+            Padding="35,20"
+            Background="{DynamicResource SpaceBackgroundBrush}"
+            BorderBrush="BlueViolet"
+            BorderThickness="1"
+            CornerRadius="16">
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <TextBlock
+                    Margin="0,0,15,0"
+                    VerticalAlignment="Center"
+                    FontSize="22"
+                    FontWeight="Medium"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    Text="Підсумок:" />
+                            <TextBlock
+                    FontSize="36"
+                    FontWeight="Bold"
+                    Style="{StaticResource AccentTextStyle}"
+                    Text="{Binding FinalScore}" />
+                            <TextBlock
+                    Margin="8,0"
+                    FontSize="36"
+                    FontWeight="Bold"
+                    Style="{StaticResource AccentTextStyle}"
+                    Text="/" />
+                            <TextBlock
+                    FontSize="36"
+                    FontWeight="Bold"
+                    Style="{StaticResource AccentTextStyle}"
+                    Text="{Binding MaxScore}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Екран завантаження -->
+        <Grid
+            Grid.RowSpan="3"
+            Panel.ZIndex="100"
+            Background="{StaticResource SpaceModalOverlayBrush}"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar
+                    Width="200"
+                    IsIndeterminate="True"
+                    Style="{StaticResource SpaceProgressBarStyle}" />
+                <TextBlock
+                    Margin="0,15,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Style="{StaticResource AccentTextStyle}"
+                    Text="Обробка даних..." />
+            </StackPanel>
+        </Grid>
+
+        <!-- Підвал: Повідомлення про помилку та кнопка Здати -->
+        <Grid Grid.Row="2" Margin="0,15,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Column="0"
+                Margin="0,0,15,0"
+                Padding="15"
+                VerticalAlignment="Center"
+                Background="{DynamicResource SpaceBackgroundBrush}"
+                BorderBrush="{StaticResource ErrorTextBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock
+                    Style="{StaticResource ErrorTextStyle}"
+                    Text="{Binding ErrorMessage}"
+                    TextAlignment="Left" />
+            </Border>
+
+            <Button
+                Grid.Column="1"
+                Padding="40,0"
+                VerticalAlignment="Center"
+                Command="{Binding SubmitQuizCommand}"
+                Content="✅ Здати">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource SpaceActionSuccessButton}" TargetType="Button">
+                        <Setter Property="Height" Value="45" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

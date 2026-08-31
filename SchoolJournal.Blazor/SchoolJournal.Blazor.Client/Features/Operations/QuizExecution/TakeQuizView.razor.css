@@ -1,0 +1,382 @@
+﻿.take-quiz-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding-bottom: 20px;
+    align-self: flex-start;
+}
+
+/* --- Список питань --- */
+.questions-list {
+    margin-top: 0;
+}
+
+.question-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.question-text {
+    flex: 1;
+    font-size: 18px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.points-badge {
+    color: var(--accent-color);
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 20px;
+    white-space: nowrap;
+}
+
+/* --- Варіанти відповідей --- */
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-option, .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+    .radio-option input[type="radio"], .checkbox-option input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent-color);
+        cursor: pointer;
+    }
+
+.text-answer {
+    width: 100%;
+    background-color: var(--space-background);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    padding: 10px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* --- КРОСВОРД ТА ФІЛВОРД --- */
+.crossword-container, .fillword-container {
+    display: flex;
+    flex-wrap: wrap; /* Переносить питання вниз на малих екранах */
+    gap: 40px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.crossword-grid, .fillword-grid {
+    display: grid;
+    gap: 0;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto; /* Внутрішній скрол для гігантських сіток */
+    padding-bottom: 10px; /* Відступ для скролбару */
+    /* Заборона виділення тексту для всієї сітки */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+    /* Красивий горизонтальний скрол для сіток */
+    .crossword-grid::-webkit-scrollbar, .fillword-grid::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .crossword-grid::-webkit-scrollbar-track, .fillword-grid::-webkit-scrollbar-track {
+        background: var(--space-background);
+        border-radius: 10px;
+    }
+
+    .crossword-grid::-webkit-scrollbar-thumb, .fillword-grid::-webkit-scrollbar-thumb {
+        background-color: var(--accent-color);
+        border-radius: 10px;
+    }
+
+.crossword-cell {
+    width: 35px;
+    height: 35px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+    .crossword-cell.empty {
+        background-color: transparent;
+    }
+
+    .crossword-cell.active {
+        background-color: var(--space-background);
+        border: 1px solid var(--accent-color);
+    }
+
+.cell-number {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.cell-input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    outline: none;
+}
+
+.fillword-cell {
+    width: 65px;
+    height: 65px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--accent-color);
+    background-color: transparent;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    /* Додатковий захист від перетягування */
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+    .fillword-cell:hover {
+        opacity: 0.8;
+    }
+
+    .fillword-cell.selected .cell-letter {
+        color: white;
+    }
+
+.cell-letter {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--text-primary);
+    /* Заборона кліку по самому тексту (щоб клік йшов тільки по клітинці) */
+    pointer-events: none;
+    user-select: none;
+}
+
+/* --- Запитання (Підказки) --- */
+.crossword-clues, .fillword-clues {
+    flex: 1 1 350px; /* Динамічно росте, але не менше 350px */
+    max-width: none; /* Прибрано жорстке обмеження, яке стискало текст */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.clue-item {
+    display: flex;
+    gap: 15px;
+}
+
+.clue-badge {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    height: max-content;
+    font-size: 16px;
+}
+
+.fillword-badge {
+    background-color: #2ECC71;
+}
+
+.clue-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.clue-direction {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.clue-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* --- Підвал і кнопка --- */
+.footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+}
+
+.submit-btn {
+    padding: 12px 40px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #2ECC71;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+    .submit-btn:hover {
+        opacity: 0.8;
+    }
+
+/* --- Екран успіху --- */
+.success-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.success-card {
+    background-color: var(--surface-color);
+    padding: 50px 60px;
+    text-align: center;
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+}
+
+.success-image {
+    width: 350px;
+    height: 250px;
+    display: block;
+    margin: 0 auto;
+}
+
+.mt-3 {
+    margin-top: 15px;
+}
+
+.mt-4 {
+    margin-top: 25px;
+}
+
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--space-background);
+    padding: 20px 35px;
+    border-radius: 16px;
+    border: 1px solid var(--accent-color);
+}
+
+.score-label {
+    color: var(--text-primary);
+    font-size: 22px;
+    margin-right: 15px;
+    font-weight: 500;
+}
+
+.score-value {
+    color: var(--accent-color);
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.score-divider {
+    color: var(--accent-color);
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0 8px;
+}
+
+.score-max {
+    color: var(--accent-color);
+    font-size: 36px;
+    font-weight: bold;
+}
+
+/* Допоміжні класи */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-radius: 20px;
+}
+
+.loading-box {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--accent-color);
+}
+
+.loading-bar {
+    width: 200px;
+    height: 4px;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-bar-indeterminate {
+    position: absolute;
+    height: 100%;
+    background-color: var(--accent-color);
+    animation: indeterminate 1.5s infinite linear;
+}
+
+.error-banner {
+    background-color: var(--space-background);
+    border: 1px solid var(--error-color);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.error-text {
+    color: var(--error-color);
+    font-weight: bold;
+}

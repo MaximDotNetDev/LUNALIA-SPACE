@@ -1,0 +1,397 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.Lessons.LessonsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,15"
+            Orientation="Horizontal">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="Уроки:" />
+
+            <TextBlock
+                Margin="20,0,5,0"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Foreground="#555"
+                Text="Клас:" />
+            <ComboBox
+                Width="80"
+                VerticalAlignment="Center"
+                DisplayMemberPath="ClassName"
+                ItemsSource="{Binding Classes}"
+                SelectedItem="{Binding SelectedFilterClass}" />
+
+            <TextBlock
+                Margin="15,0,5,0"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Foreground="#555"
+                Text="Предмет:" />
+            <ComboBox
+                Width="300"
+                VerticalAlignment="Center"
+                ItemsSource="{Binding Assignments}"
+                SelectedItem="{Binding SelectedFilterAssignment}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontWeight="Bold" Text="{Binding SubjectName}" />
+                            <TextBlock Foreground="Gray" Text=" (" />
+                            <TextBlock Foreground="Gray" Text="{Binding SubgroupName, TargetNullValue='Увесь клас'}" />
+                            <TextBlock Foreground="Gray" Text=") - " />
+                            <TextBlock Foreground="#2C3E50" Text="{Binding TeacherFullName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Button
+                Margin="20,0,0,0"
+                Padding="15,5"
+                VerticalAlignment="Center"
+                Background="#2ECC71"
+                Command="{Binding OpenCreateFormCommand}"
+                Content="➕ Створити урок"
+                Foreground="White" />
+
+            <TextBlock
+                Margin="20,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="Red"
+                Text="{Binding ErrorMessage}"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+        </StackPanel>
+
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            IsReadOnly="True"
+            ItemsSource="{Binding Lessons}">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="100"
+                    Binding="{Binding LessonDate, StringFormat='dd.MM.yyyy'}"
+                    Header="Дата" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding PeriodName}"
+                    Header="Дзвінок" />
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding LessonTypeName}"
+                    Header="Тип уроку" />
+                <DataGridTextColumn
+                    Width="250"
+                    Binding="{Binding LessonTopic}"
+                    Header="Тема уроку">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Homework}"
+                    Header="Домашнє завдання">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn
+                    Width="100"
+                    Binding="{Binding RoomName}"
+                    Header="Кабінет" />
+                <DataGridTemplateColumn Width="180" Header="Дії">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Background="#3498DB"
+                                    Command="{Binding DataContext.OpenEditFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Тема/ДЗ"
+                                    FontSize="10"
+                                    Foreground="White"
+                                    ToolTip="Редагувати тему та ДЗ" />
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Background="#F39C12"
+                                    Command="{Binding DataContext.OpenRescheduleFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Розклад"
+                                    FontSize="10"
+                                    Foreground="White"
+                                    ToolTip="Перенести урок (дата/час/кабінет)" />
+                                <Button
+                                    Background="#E74C3C"
+                                    Command="{Binding DataContext.DeleteLessonCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Видалити"
+                                    FontSize="10"
+                                    Foreground="White" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ProgressBar
+            Grid.Row="1"
+            Height="4"
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="100"
+            Background="#80000000"
+            Visibility="{Binding IsFormOpen, Converter={StaticResource UniversalVis}}">
+            <Border
+                Width="450"
+                Padding="25"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                CornerRadius="8">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="15"
+                        Direction="270"
+                        Opacity="0.25"
+                        ShadowDepth="2" />
+                </Border.Effect>
+
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="{Binding FormTitle}" />
+
+                    <TextBlock
+                        Margin="0,0,0,15"
+                        Foreground="Red"
+                        Text="{Binding ErrorMessage}"
+                        TextWrapping="Wrap"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+                    <StackPanel Visibility="{Binding IsEditing, Converter={StaticResource UniversalVis}, ConverterParameter='Inverse'}">
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Foreground="#555"
+                            Text="Дата уроку:" />
+                        <DatePicker Margin="0,0,0,10" SelectedDate="{Binding FormLessonDate}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Foreground="#555"
+                            Text="Семестр:" />
+                        <ComboBox
+                            Margin="0,0,0,10"
+                            DisplayMemberPath="SemesterName"
+                            ItemsSource="{Binding Semesters}"
+                            SelectedItem="{Binding SelectedSemester}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Foreground="#555"
+                            Text="Розклад дзвінка (Час):" />
+                        <ComboBox
+                            Margin="0,0,0,10"
+                            DisplayMemberPath="PeriodName"
+                            ItemsSource="{Binding BellSchedules}"
+                            SelectedItem="{Binding SelectedBellSchedule}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Foreground="#555"
+                            Text="Кабінет:" />
+                        <ComboBox
+                            Margin="0,0,0,10"
+                            DisplayMemberPath="RoomName"
+                            ItemsSource="{Binding Classrooms}"
+                            SelectedItem="{Binding SelectedClassroom}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Foreground="#555"
+                            Text="Тип уроку:" />
+                        <ComboBox
+                            Margin="0,0,0,10"
+                            DisplayMemberPath="TypeName"
+                            ItemsSource="{Binding LessonTypes}"
+                            SelectedItem="{Binding SelectedLessonType}" />
+                    </StackPanel>
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Тема уроку:" />
+                    <TextBox
+                        Margin="0,0,0,10"
+                        Padding="5"
+                        Text="{Binding FormLessonTopic, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Домашнє завдання:" />
+                    <TextBox
+                        Height="60"
+                        Margin="0,0,0,20"
+                        Padding="5"
+                        AcceptsReturn="True"
+                        Text="{Binding FormHomework, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Padding="10"
+                            Background="#95A5A6"
+                            Command="{Binding CloseFormCommand}"
+                            Content="Скасувати"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                        <Button
+                            Grid.Column="2"
+                            Padding="10"
+                            Background="#3498DB"
+                            Command="{Binding SaveFormCommand}"
+                            Content="Зберегти"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="101"
+            Background="#80000000"
+            Visibility="{Binding IsRescheduleFormOpen, Converter={StaticResource UniversalVis}}">
+            <Border
+                Width="400"
+                Padding="25"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                CornerRadius="8">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="15"
+                        Direction="270"
+                        Opacity="0.25"
+                        ShadowDepth="2" />
+                </Border.Effect>
+
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="Перенесення уроку" />
+
+                    <TextBlock
+                        Margin="0,0,0,15"
+                        Foreground="Red"
+                        Text="{Binding ErrorMessage}"
+                        TextWrapping="Wrap"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Нова дата:" />
+                    <DatePicker Margin="0,0,0,10" SelectedDate="{Binding RescheduleDate}" />
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Новий час (Дзвінок):" />
+                    <ComboBox
+                        Margin="0,0,0,10"
+                        DisplayMemberPath="PeriodName"
+                        ItemsSource="{Binding BellSchedules}"
+                        SelectedItem="{Binding RescheduleSelectedBellSchedule}" />
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Новий кабінет:" />
+                    <ComboBox
+                        Margin="0,0,0,20"
+                        DisplayMemberPath="RoomName"
+                        ItemsSource="{Binding Classrooms}"
+                        SelectedItem="{Binding RescheduleSelectedClassroom}" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Padding="10"
+                            Background="#95A5A6"
+                            Command="{Binding CloseRescheduleFormCommand}"
+                            Content="Скасувати"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                        <Button
+                            Grid.Column="2"
+                            Padding="10"
+                            Background="#F39C12"
+                            Command="{Binding SaveRescheduleAsyncCommand}"
+                            Content="Перенести"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

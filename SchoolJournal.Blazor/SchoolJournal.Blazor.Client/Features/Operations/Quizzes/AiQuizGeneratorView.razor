@@ -1,0 +1,143 @@
+﻿@implements IDisposable
+
+<div class="generator-container">
+
+    <div class="settings-panel space-panel-border">
+        <h2 class="page-title">⚙️ Налаштування генерації</h2>
+
+        <div class="input-group">
+            <label class="form-label">Шлях до PDF файлу:</label>
+            <div class="row-group">
+                <input type="text" class="space-input half-width" readonly placeholder="Файл не обрано" value="@ViewModel.SelectedFileName" />
+                <InputFile OnChange="HandleFileSelected" accept=".pdf" class="file-input" id="pdfUpload" />
+                <label for="pdfUpload" class="file-upload-btn btn-info" style="display: flex; align-items: center; margin: 0;">📁 Огляд</label>
+            </div>
+        </div>
+
+        <div class="row-group">
+            <div class="input-group half-width">
+                <label class="form-label">Зі сторінки:</label>
+                <input type="number" class="space-input" @bind="ViewModel.StartPage" @bind:event="oninput" />
+            </div>
+            <div class="input-group half-width">
+                <label class="form-label">По сторінку:</label>
+                <input type="number" class="space-input" @bind="ViewModel.EndPage" @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="form-label">Загальна кількість питань/слів:</label>
+            <input type="number" class="space-input" @bind="ViewModel.TotalQuestions" @bind:event="oninput" />
+        </div>
+
+        <div class="input-group">
+            <label class="form-label">Балів за одне завдання:</label>
+            <input type="number" class="space-input" @bind="ViewModel.PointsPerQuestion" @bind:event="oninput" />
+        </div>
+
+        <div class="input-group">
+            <label class="form-label">Формат завдання:</label>
+            <select class="space-input" @bind="ViewModel.SelectedQuizType">
+                @foreach (var type in ViewModel.QuizTypes)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+
+        @if (ViewModel.IsMultipleChoiceSelected)
+        {
+            <div class="input-group">
+                <label class="form-label">З кількома відповідями:</label>
+                <input type="number" class="space-input" @bind="ViewModel.MultiAnswerCount" @bind:event="oninput" />
+            </div>
+            <div class="input-group">
+                <label class="form-label">На судження:</label>
+                <input type="number" class="space-input" @bind="ViewModel.JudgmentCount" @bind:event="oninput" />
+            </div>
+        }
+
+        <button class="btn-primary generate-btn" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.GenerateQuizCommand.Execute(ViewModel.SelectedQuizType)">
+            ✨ Згенерувати
+        </button>
+
+        @if (ViewModel.IsLoading)
+        {
+            <div class="loading-status">
+                <span class="accent-text font-bold">⏳ Зачекайте, генерується...</span>
+                <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+            </div>
+        }
+    </div>
+
+    <div class="result-panel">
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+        {
+            <div class="alert-box error-box">
+                <span class="error-text">@ViewModel.ErrorMessage</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.SuccessMessage))
+        {
+            <div class="alert-box success-box">
+                <span class="success-text">@ViewModel.SuccessMessage</span>
+            </div>
+        }
+
+        @if (ViewModel.GeneratedQuiz != null)
+        {
+            <div class="quiz-preview-panel space-panel-border">
+                <div class="quiz-preview-header">
+                    <span class="accent-text font-bold label-small">НАЗВА ТЕСТУ:</span>
+                    <input type="text" class="quiz-title-input" @bind="ViewModel.GeneratedQuizTitle" @bind:event="oninput" />
+                </div>
+
+                <div class="questions-list">
+                    @foreach (var question in ViewModel.GeneratedQuiz.Questions)
+                    {
+                        <div class="question-card">
+                            <span class="question-index">@(question.OrderIndex).</span>
+                            <span class="question-text text-wrap">@question.QuestionText</span>
+                            <div class="question-points">
+                                <span class="points-text">@(question.Points) б.</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="assignment-panel space-panel-border">
+                <div class="assignment-inputs">
+                    <div class="input-group">
+                        <span class="accent-text font-bold label-small">ПРИЗНАЧИТИ КЛАСУ:</span>
+                        <select class="space-input" @bind="ViewModel.SelectedClassId">
+                            <option value="">-- Клас --</option>
+                            @foreach (var cls in ViewModel.Classes)
+                            {
+                                <option value="@cls.ClassId">@cls.ClassName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="accent-text font-bold label-small">ПРЕДМЕТ ЖУРНАЛУ:</span>
+                        <select class="space-input" @bind="ViewModel.SelectedSubjectId">
+                            <option value="">-- Предмет --</option>
+                            @foreach (var subj in ViewModel.Subjects)
+                            {
+                                <option value="@subj.SubjectId">@subj.SubjectName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-success save-quiz-btn" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.SaveGeneratedQuizCommand.Execute(null)">
+                    💾 Зберегти в систему
+                </button>
+            </div>
+        }
+    </div>
+
+</div>

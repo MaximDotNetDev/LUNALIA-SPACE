@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\Core\NewFolder\**" />
+    <EmbeddedResource Remove="Features\Core\NewFolder\**" />
+    <None Remove="Features\Core\NewFolder\**" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SchoolJournal.Contracts\SchoolJournal.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Refit.HttpClientFactory" />
+		<PackageReference Include="ErrorOr" />
+		<PackageReference Include="CommunityToolkit.Mvvm" />
+		<PackageReference Include="Polly.Core" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Features\Infrastructure\Common\" />
+	  <Folder Include="Features\Reference\Common\" />
+	</ItemGroup>
+	
+</Project>

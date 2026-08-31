@@ -1,0 +1,123 @@
+﻿@using SchoolJournal.Client.Core.Features.Operations.Quizzes
+@implements IDisposable
+
+<div class="quizzes-container">
+
+    <div class="quizzes-header">
+        <h2 class="page-title">Бібліотека тестів</h2>
+        <button class="btn-info" @onclick="() => ViewModel.OpenAiGeneratorCommand.Execute(null)">🤖 Згенерувати через</button>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+        {
+            <span class="error-text">@ViewModel.ErrorMessage</span>
+        }
+    </div>
+
+    <div class="table-container">
+        @if (ViewModel.IsLoading && !ViewModel.IsFormOpen && !ViewModel.IsAssignFormOpen)
+        {
+            <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+        }
+
+        <table class="space-table">
+            <thead>
+                <tr>
+                    <th style="width: 350px;">Назва завдання</th>
+                    <th style="width: 140px;">Створено</th>
+                    <th style="width: 410px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var quiz in ViewModel.Quizzes)
+                {
+                    <tr>
+                        <td class="text-wrap">@quiz.Title</td>
+                        <td>@quiz.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="actions-cell">
+                            <button class="btn-warning" @onclick="() => ViewModel.OpenEditFormCommand.Execute(quiz)">✏️ Ред.</button>
+                            <button class="btn-success" @onclick="() => ViewModel.OpenAssignFormCommand.Execute(quiz)">🎓 Призначити</button>
+                            <button class="btn-info" @onclick="() => ViewModel.OpenQuestionsCommand.Execute(quiz)">❓ Питання</button>
+                            <button class="btn-danger" @onclick="() => ViewModel.DeleteQuizCommand.Execute(quiz)">✖ Видалити</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewModel.IsFormOpen)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content space-panel-border">
+                <h3 class="modal-title">@ViewModel.FormTitle</h3>
+
+                <label class="form-label">Назва завдання:</label>
+                <input type="text" class="space-input" @bind="ViewModel.FormQuizTitle" @bind:event="oninput" />
+
+                <label class="form-label">Предмет:</label>
+                <select class="space-input" @bind="ViewModel.FormSubjectId">
+                    <option value="">-- Оберіть предмет --</option>
+                    @foreach (var subject in ViewModel.AvailableSubjects)
+                    {
+                        <option value="@subject.SubjectId">@subject.SubjectName</option>
+                    }
+                </select>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" @onclick="() => ViewModel.CloseFormCommand.Execute(null)">Скасувати</button>
+                    <button class="btn-primary" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.SaveFormCommand.Execute(null)">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewModel.IsAssignFormOpen)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content space-panel-border" style="max-width: 400px;">
+                <h3 class="modal-title">Призначити завдання класу</h3>
+
+                <label class="form-label">Клас:</label>
+                <select class="space-input" @bind="ViewModel.AssignClassId">
+                    <option value="">-- Оберіть клас --</option>
+                    @foreach (var cls in ViewModel.AvailableClasses)
+                    {
+                        <option value="@cls.ClassId">@cls.ClassName</option>
+                    }
+                </select>
+
+                <label class="form-label">Дедлайн:</label>
+                <input type="date" class="space-input" @bind="ViewModel.AssignDueDate" @bind:format="yyyy-MM-dd" />
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" @onclick="() => ViewModel.CloseAssignFormCommand.Execute(null)">Скасувати</button>
+                    <button class="btn-primary" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.SaveAssignFormCommand.Execute(null)">Призначити</button>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public QuizzesViewModel ViewModel { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}

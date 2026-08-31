@@ -1,0 +1,73 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Administration.AdministrationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:logsView="clr-namespace:SchoolJournal.Desktop.Features.Infrastructure.Logs"
+    xmlns:logsVm="clr-namespace:SchoolJournal.Client.Core.Features.Infrastructure.Logs;assembly=SchoolJournal.Client.Core"
+    xmlns:outboxView="clr-namespace:SchoolJournal.Desktop.Features.Infrastructure.Outbox"
+    xmlns:outboxVm="clr-namespace:SchoolJournal.Client.Core.Features.Infrastructure.Outbox;assembly=SchoolJournal.Client.Core">
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type logsVm:AuditLogsViewModel}">
+            <logsView:AuditLogsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type outboxVm:OutboxViewModel}">
+            <outboxView:OutboxView />
+        </DataTemplate>
+
+        <Style x:Key="AdminTabButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Background" Value="#ECF0F1" />
+            <Setter Property="Foreground" Value="#2C3E50" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#BDC3C7" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel
+            Grid.Column="0"
+            Width="200"
+            Margin="20,20,0,20"
+            Orientation="Vertical">
+            <TextBlock
+                Margin="0,0,0,15"
+                FontSize="16"
+                FontWeight="Bold"
+                Foreground="#333"
+                Text="Керування системою" />
+
+            <Button
+                Command="{Binding NavigateToAuditLogsCommand}"
+                Content="🛡️ Логи аудиту"
+                Style="{StaticResource AdminTabButtonStyle}" />
+
+            <Button
+                Command="{Binding NavigateToOutboxCommand}"
+                Content="📤 Outbox (Черга)"
+                Style="{StaticResource AdminTabButtonStyle}" />
+
+            <!--  Тут згодом буде кнопка: Керування обліковими записами (Users)  -->
+        </StackPanel>
+
+        <Border
+            Grid.Column="1"
+            Margin="20"
+            Background="White"
+            CornerRadius="5">
+            <ContentControl Content="{Binding CurrentAdminView}" />
+        </Border>
+    </Grid>
+</UserControl>

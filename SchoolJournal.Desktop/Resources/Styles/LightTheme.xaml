@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="SpaceBackground">#D6EAF8</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="AccentColor">#5E35B1</Color>
+    <Color x:Key="AccentHoverColor">#4527A0</Color>
+    <Color x:Key="TextPrimary">#001F3F</Color>
+    <Color x:Key="TextSecondary">#4A5568</Color>
+    <Color x:Key="ErrorColor">#DC2626</Color>
+    <Color x:Key="BorderColor">#A3BFDB</Color>
+
+    <SolidColorBrush x:Key="SpaceBackgroundBrush" Color="{StaticResource SpaceBackground}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+</ResourceDictionary>

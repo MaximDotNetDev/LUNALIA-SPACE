@@ -1,0 +1,80 @@
+﻿@using SchoolJournal.Client.Core.Features.Testing
+@using SchoolJournal.Client.Core.Features.Operations.Quizzes
+@using SchoolJournal.Client.Core.Features.Operations.QuizAssignments
+@using SchoolJournal.Client.Core.Features.Operations.QuizExecution
+@using SchoolJournal.Client.Core.Features.Operations.QuizQuestions
+@using SchoolJournal.Blazor.Client.Features.Operations.Quizzes
+@using SchoolJournal.Blazor.Client.Features.Operations.QuizExecution
+@using SchoolJournal.Blazor.Client.Features.Operations.QuizQuestions
+@using SchoolJournal.Blazor.Client.Features.Operations.QuizAssignments
+@implements IDisposable
+
+<div class="testing-container">
+
+    <div class="testing-header">
+        @if (ViewModel.IsTeacher)
+        {
+            <button class="tab-btn" @onclick="() => ViewModel.NavigateToQuizzesCommand.Execute(null)">📄 Управління завданнями</button>
+            <button class="tab-btn" @onclick="() => ViewModel.NavigateToQuizAssignmentsCommand.Execute(null)">📋 Журнал призначень</button>
+            <button class="tab-btn" @onclick="() => ViewModel.NavigateToAiGeneratorCommand.Execute(null)">🤖 Генератор завдань</button>
+        }
+    </div>
+
+    <div class="testing-body">
+
+        <div class="testing-content space-panel-border">
+            @if (ViewModel.CurrentTestingView is QuizzesViewModel quizzesVm)
+            {
+                <QuizzesView ViewModel="quizzesVm" />
+            }
+            else if (ViewModel.CurrentTestingView is QuizAssignmentsViewModel assignVm)
+            {
+                <QuizAssignmentsView ViewModel="assignVm" />
+            }
+            else if (ViewModel.CurrentTestingView is StudentAssignmentsViewModel studentAssignVm)
+            {
+                <StudentAssignmentsView ViewModel="studentAssignVm" />
+            }
+            else if (ViewModel.CurrentTestingView is AiQuizGeneratorViewModel aiVm)
+            {
+                <AiQuizGeneratorView ViewModel="aiVm" />
+            }
+            else if (ViewModel.CurrentTestingView is TakeQuizViewModel takeQuizVm)
+            {
+                <TakeQuizView ViewModel="takeQuizVm" />
+            }
+            else if (ViewModel.CurrentTestingView is QuizQuestionsViewModel questionsVm)
+            {
+                <QuizQuestionsView ViewModel="questionsVm" />
+            }
+            else
+            {
+                <div class="placeholder-text">Оберіть вкладку зверху</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TestingViewModel ViewModel { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        // Підписуємось на зміни, щоб перемальовувати UI при перемиканні вкладок
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}

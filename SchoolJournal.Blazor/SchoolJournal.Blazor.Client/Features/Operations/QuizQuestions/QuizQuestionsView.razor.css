@@ -1,0 +1,299 @@
+﻿.questions-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.questions-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.error-text {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.text-small {
+    font-size: 12px;
+}
+
+/* Таблиця */
+.table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+.space-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-primary);
+    border: 1px solid var(--accent-color);
+}
+
+    .space-table th {
+        background-color: var(--space-background);
+        color: var(--accent-color);
+        padding: 15px 10px;
+        text-align: left;
+        border-bottom: 2px solid var(--accent-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .space-table td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        background-color: var(--surface-color);
+    }
+
+    .space-table tbody tr:hover td {
+        background-color: rgba(138, 43, 226, 0.05);
+    }
+
+.text-center {
+    text-align: center;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.text-wrap {
+    word-break: break-word;
+}
+
+/* Бейджі типів */
+.type-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-normal {
+    background-color: var(--space-background);
+    color: var(--text-primary);
+}
+
+.badge-accent {
+    background-color: rgba(94, 53, 177, 0.1);
+    color: var(--accent-color);
+}
+
+.badge-warning {
+    background-color: rgba(243, 156, 18, 0.1);
+    color: #F39C12;
+}
+
+/* Кнопки */
+.btn-success, .btn-warning, .btn-danger, .btn-info, .btn-primary, .btn-secondary {
+    height: 32px;
+    padding: 0 15px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-success {
+    background-color: #2ECC71;
+}
+
+.btn-warning {
+    background-color: #F39C12;
+}
+
+.btn-danger {
+    background-color: #E74C3C;
+}
+
+.btn-info {
+    background-color: #3498DB;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    height: 38px;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 0 20px;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-secondary);
+    height: 38px;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 0 15px;
+}
+
+    .btn-success:hover, .btn-warning:hover, .btn-danger:hover, .btn-info:hover, .btn-primary:hover, .btn-secondary:hover {
+        opacity: 0.8;
+    }
+
+.btn-icon {
+    width: 32px;
+    padding: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-actions {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 5px;
+}
+
+/* Модальне вікно */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    padding: 25px;
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    box-shadow: 0 0 15px var(--accent-color);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.modal-large {
+    width: 100%;
+    max-width: 600px;
+}
+
+.modal-title {
+    font-size: 18px;
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.modal-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.space-input {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.row-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.half-width {
+    flex: 1;
+}
+
+.mt-2 {
+    margin-top: 15px;
+}
+
+.mt-3 {
+    margin-top: 20px;
+}
+
+.accent-text {
+    color: var(--accent-color);
+}
+
+/* Опції відповідей */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.option-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent-color);
+    cursor: pointer;
+}
+
+.option-input {
+    flex: 1;
+    margin: 0;
+}
+
+/* Таблиця кросворду всередині модалки */
+.crossword-table-wrapper {
+    max-height: 250px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid var(--accent-color);
+    margin-top: 10px;
+}
+
+.compact-table th, .compact-table td {
+    padding: 6px;
+}
+
+.compact-input {
+    padding: 6px 10px;
+}

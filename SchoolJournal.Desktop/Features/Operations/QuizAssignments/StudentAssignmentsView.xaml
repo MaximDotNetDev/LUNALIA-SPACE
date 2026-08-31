@@ -1,0 +1,75 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.QuizAssignments.StudentAssignmentsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters"
+    Background="Transparent"
+    Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        
+        <TextBlock
+            Grid.Row="1"
+            Margin="0,0,0,15"
+            FontSize="16"
+            FontWeight="Bold"
+            Foreground="Crimson"
+            Text="{Binding ErrorMessage}"
+            Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+        <DataGrid
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding Assignments}"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            Style="{StaticResource SpaceDataGridStyle}">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="300"
+                    Binding="{Binding QuizTitle}"
+                    Header="Назва завдань" />
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding AssignedDate, StringFormat='dd.MM.yyyy HH:mm'}"
+                    Header="Дата призначення" />
+                <DataGridTextColumn
+                    Width="200"
+                    Binding="{Binding DueDate, StringFormat='dd.MM.yyyy HH:mm'}"
+                    Header="Здати до " />
+
+                <DataGridTemplateColumn Width="180" Header="Дії">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                Margin="0,0,5,0"
+                                Command="{Binding DataContext.StartQuizCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                CommandParameter="{Binding}"
+                                Content="▶️ Почати завдання"
+                                Style="{StaticResource SpaceActionSuccessButton}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ProgressBar
+            Grid.Row="1"
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Style="{StaticResource SpaceProgressBarStyle}"
+            Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+    </Grid>
+</UserControl>

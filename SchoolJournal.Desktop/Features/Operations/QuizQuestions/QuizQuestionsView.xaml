@@ -1,0 +1,423 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.QuizQuestions.QuizQuestionsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+
+    <Grid x:Name="RootContainer" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Додано нижні відступи (Margin Bottom = 10), щоб при перенесенні на новий рядок елементи не злипалися  -->
+        <WrapPanel
+            Grid.Row="0"
+            Margin="0,0,0,5"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+
+            <TextBlock
+                Margin="0,0,20,10"
+                Style="{StaticResource PageHeaderTextStyle}"
+                Text="Редактор питань тесту" />
+
+            <Button
+                Margin="0,0,20,10"
+                Command="{Binding OpenCreateFormCommand}"
+                Content="➕ Додати питання"
+                Style="{StaticResource SpaceActionSuccessButton}" />
+
+            <TextBlock
+                Margin="0,0,0,10"
+                VerticalAlignment="Center"
+                Style="{StaticResource ErrorTextStyle}"
+                Text="{Binding ErrorMessage}"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+        </WrapPanel>
+
+        <!--  DataGrid знаходиться у рядку з Height="*", тому він автоматично займає весь доступний простір і використовує власні скролбари  -->
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding Questions}"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            Style="{StaticResource SpaceDataGridStyle}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="100" Header="Порядок">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,4,0"
+                                    Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="▲"
+                                    Style="{StaticResource SpaceActionInfoButton}"
+                                    ToolTip="Вгору" />
+                                <Button
+                                    Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="▼"
+                                    Style="{StaticResource SpaceActionInfoButton}"
+                                    ToolTip="Вниз" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn
+                    Width="60"
+                    Binding="{Binding Points}"
+                    Header="Бали" />
+
+                <DataGridTemplateColumn Width="90" Header="Тип">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="5" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Звичайне" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding QuestionType}" Value="1">
+                                                <Setter Property="Text" Value="Судження" />
+                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding QuestionType}" Value="9">
+                                                <Setter Property="Text" Value="Кросворд" />
+                                                <Setter Property="Foreground" Value="{StaticResource WarningTextBrush}" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding QuestionType}" Value="10">
+                                                <Setter Property="Text" Value="Філворд" />
+                                                <Setter Property="Foreground" Value="{StaticResource WarningTextBrush}" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding QuestionType}" Value="4">
+                                                <Setter Property="Text" Value="Так чи ні" />
+                                                <Setter Property="Foreground" Value="MediumSeaGreen" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding QuestionType}" Value="5">
+                                                <Setter Property="Text" Value="Зайве" />
+                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn
+                    Width="350"
+                    Binding="{Binding QuestionText}"
+                    Header="Текст питання">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTemplateColumn Width="200" Header="Дії">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Command="{Binding DataContext.OpenEditFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="✏️ Ред."
+                                    Style="{StaticResource SpaceActionWarningButton}"
+                                    ToolTip="Редагувати питання" />
+                                <Button
+                                    Command="{Binding DataContext.DeleteQuestionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="✖ Видалити"
+                                    Style="{StaticResource SpaceActionDangerButton}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ProgressBar
+            Grid.Row="1"
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Style="{StaticResource SpaceProgressBarStyle}"
+            Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+
+        <!--  Оверлей модального вікна  -->
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="100"
+            Background="{StaticResource SpaceModalOverlayBrush}"
+            Visibility="{Binding IsFormOpen, Converter={StaticResource UniversalVis}}">
+
+            <!--  Додано зовнішній ScrollViewer для всього модального вікна. Якщо екран дуже маленький, вікно можна буде прокрутити повністю  -->
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                <!--  Замінено жорсткий Width="550" на MaxWidth="550" і прибрано MaxHeight. Тепер вікно адаптивне  -->
+                <Border
+                    MaxWidth="550"
+                    Margin="20"
+                    Padding="25"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource SpacePanelBorderStyle}">
+
+                    <!--  Внутрішній ScrollViewer прибрано, щоб уникнути подвійних смуг прокрутки  -->
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SpaceDialogHeaderTextStyle}" Text="{Binding FormTitle}" />
+
+                        <TextBlock
+                            Margin="0,0,0,15"
+                            Style="{StaticResource ErrorTextStyle}"
+                            Text="{Binding ErrorMessage}"
+                            Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Текст питання:" />
+                        <TextBox
+                            MinHeight="60"
+                            Margin="0,0,0,15"
+                            AcceptsReturn="True"
+                            Text="{Binding FormQuestionText, UpdateSourceTrigger=PropertyChanged}"
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Тип питання:" />
+                        <ComboBox
+                            Margin="0,0,0,15"
+                            SelectedValue="{Binding FormQuestionType, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedValuePath="Tag">
+                            <ComboBoxItem Content="0 - Звичайний вибір" Tag="0" />
+                            <ComboBoxItem Content="1 - Аналіз суджень" Tag="1" />
+                            <ComboBoxItem Content="4 - Так чи ні" Tag="4" />
+                            <ComboBoxItem Content="5 - Знайди зайве" Tag="5" />
+                            <ComboBoxItem Content="9 - Кросворд" Tag="9" />
+                            <ComboBoxItem Content="10 - Філворд" Tag="10" />
+                        </ComboBox>
+                        
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Бали:" />
+                        <TextBox Margin="0,0,0,15" Text="{Binding FormPoints, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="9">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="10">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="4">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontWeight="SemiBold"
+                                Text="Варіанти відповідей (позначте галочкою правильні):" />
+
+                            <ItemsControl Margin="0,0,0,10" ItemsSource="{Binding FormOptions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="30" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <CheckBox
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                IsChecked="{Binding IsCorrect, UpdateSourceTrigger=PropertyChanged}" />
+
+                                            <TextBox
+                                                Grid.Column="1"
+                                                Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                                TextWrapping="Wrap" />
+
+                                            <Button
+                                                Grid.Column="2"
+                                                Margin="5,0,0,0"
+                                                Command="{Binding DataContext.RemoveOptionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="✖"
+                                                Style="{StaticResource SpaceActionDangerButton}"
+                                                ToolTip="Видалити варіант" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Button
+                                Margin="0,0,0,25"
+                                HorizontalAlignment="Left"
+                                Command="{Binding AddOptionCommand}"
+                                Content="➕ Додати варіант"
+                                Style="{StaticResource SpaceActionSuccessButton}" />
+                        </StackPanel>
+
+                        <!--  Панель для формату "Так чи ні" (Тип 4)  -->
+                        <StackPanel Margin="0,0,0,25">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="4">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock Margin="0,0,0,5" FontWeight="SemiBold" Text="Твердження є правильним?" />
+                            <CheckBox Margin="0,0,0,15" Content="Так, це правда (isTrue = true)" IsChecked="{Binding FormIsTrue, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Margin="0,0,0,5" FontWeight="SemiBold" Text="Детальне пояснення (Обов'язково):" />
+                            <TextBox MinHeight="60" AcceptsReturn="True" Text="{Binding FormExplanation, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!--  Додаткова панель для пояснення формату "Знайди зайве" (Тип 5)  -->
+                        <StackPanel Margin="0,0,0,25">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="5">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock Margin="0,0,0,5" FontWeight="SemiBold" Text="Пояснення, чому позначений термін є зайвим (Обов'язково):" />
+                            <TextBox MinHeight="60" AcceptsReturn="True" Text="{Binding FormExplanation, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,0,0,25">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="9">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding FormQuestionType}" Value="10">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                Style="{StaticResource AccentTextStyle}"
+                                Text="Слова головоломки (Можна редагувати лише загадки):" />
+                            <TextBlock
+                                Margin="0,0,0,10"
+                                FontSize="11"
+                                Style="{StaticResource ErrorTextStyle}"
+                                Text="УВАГА: Відповіді змінити неможливо. Вони жорстко зашиті у згенеровану сітку (зміна літер зламає її роботу)." />
+                            
+                            <DataGrid
+                                Height="180"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                IsReadOnly="False"
+                                ItemsSource="{Binding FormCrosswordWords}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                Style="{StaticResource SpaceDataGridStyle}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="40"
+                                        Binding="{Binding Number}"
+                                        Header="№"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="150"
+                                        Binding="{Binding Answer}"
+                                        FontWeight="Bold"
+                                        Header="Слово"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="*"
+                                        MinWidth="150"
+                                        Binding="{Binding Clue, UpdateSourceTrigger=PropertyChanged}"
+                                        Header="Загадка">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextWrapping" Value="Wrap" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style BasedOn="{StaticResource SpaceInputBase}" TargetType="TextBox">
+                                                <Setter Property="TextWrapping" Value="Wrap" />
+                                                <Setter Property="AcceptsReturn" Value="True" />
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding CloseFormCommand}"
+                                Content="Скасувати"
+                                Style="{StaticResource SpaceDialogSecondaryButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding SaveFormCommand}"
+                                Content="Зберегти"
+                                Style="{StaticResource SpaceDialogPrimaryButton}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,142 @@
+﻿.student-assignments-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.assignments-header {
+    margin-bottom: 20px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Таблиця */
+.table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+.space-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-primary);
+    border: 1px solid var(--accent-color);
+}
+
+    .space-table th {
+        background-color: var(--space-background);
+        color: var(--accent-color);
+        padding: 15px 10px;
+        text-align: left;
+        border-bottom: 2px solid var(--accent-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .space-table td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        background-color: var(--surface-color);
+    }
+
+    .space-table tbody tr:hover td {
+        background-color: rgba(138, 43, 226, 0.05);
+    }
+
+/* Допоміжні класи */
+.font-bold {
+    font-weight: bold;
+}
+
+.text-wrap {
+    word-break: break-word;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+    font-size: 16px;
+    padding: 20px !important;
+}
+
+.mb-3 {
+    margin-bottom: 15px;
+}
+
+/* Кнопка старту */
+.actions-cell {
+    display: flex;
+    align-items: center;
+}
+
+.btn-success {
+    height: 36px;
+    padding: 0 15px;
+    font-size: 13px;
+    font-weight: 600;
+    background-color: #2ECC71;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+    .btn-success:hover {
+        opacity: 0.8;
+        box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+    }
+
+/* Повідомлення про помилку */
+.error-banner {
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error-color);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.error-text {
+    color: var(--error-color);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Прогрес-бар */
+.loading-bar {
+    width: 100%;
+    height: 4px;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.progress-bar-indeterminate {
+    position: absolute;
+    height: 100%;
+    background-color: var(--accent-color);
+    animation: indeterminate 1.5s infinite linear;
+}
+
+@keyframes indeterminate {
+    0% {
+        left: -35%;
+        width: 35%;
+    }
+
+    100% {
+        left: 100%;
+        width: 35%;
+    }
+}

@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SchoolJournal.Domain\SchoolJournal.Domain.csproj" />
+		<ProjectReference Include="..\SchoolJournal.Contracts\SchoolJournal.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ErrorOr" />
+		<PackageReference Include="MediatR" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+		<PackageReference Include="FluentValidation" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+		<PackageReference Include="Mapster" />
+		<PackageReference Include="Mapster.DependencyInjection" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Features\Reference\Semester\Common\" />
+	</ItemGroup>
+	
+</Project>

@@ -1,0 +1,182 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Settings.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:SystemSettingsView="clr-namespace:SchoolJournal.Desktop.Features.Infrastructure.SystemSettings"
+    xmlns:SystemSettingsVm="clr-namespace:SchoolJournal.Client.Core.Features.Infrastructure.SystemSettings;assembly=SchoolJournal.Client.Core"
+    xmlns:bellScheduleView="clr-namespace:SchoolJournal.Desktop.Features.Reference.BellSchedule"
+    xmlns:bellScheduleVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.BellSchedule;assembly=SchoolJournal.Client.Core"
+    xmlns:classroomView="clr-namespace:SchoolJournal.Desktop.Features.Reference.Classroom"
+    xmlns:classroomVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.Classroom;assembly=SchoolJournal.Client.Core"
+    xmlns:gradeTypeView="clr-namespace:SchoolJournal.Desktop.Features.Reference.GradeType"
+    xmlns:gradeTypeVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.GradeType;assembly=SchoolJournal.Client.Core"
+    xmlns:lessonTypeView="clr-namespace:SchoolJournal.Desktop.Features.Reference.LessonType"
+    xmlns:lessonTypeVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.LessonType;assembly=SchoolJournal.Client.Core"
+    xmlns:pedagogicalTitleView="clr-namespace:SchoolJournal.Desktop.Features.Reference.PedagogicalTitle"
+    xmlns:pedagogicalTitleVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.PedagogicalTitle;assembly=SchoolJournal.Client.Core"
+    xmlns:positionView="clr-namespace:SchoolJournal.Desktop.Features.Reference.Position"
+    xmlns:positionVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.Position;assembly=SchoolJournal.Client.Core"
+    xmlns:qualificationView="clr-namespace:SchoolJournal.Desktop.Features.Reference.Qualification"
+    xmlns:qualificationVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.Qualification;assembly=SchoolJournal.Client.Core"
+    xmlns:semesterView="clr-namespace:SchoolJournal.Desktop.Features.Reference.Semester"
+    xmlns:semesterVm="clr-namespace:SchoolJournal.Client.Core.Features.Reference.Semester;assembly=SchoolJournal.Client.Core"
+    xmlns:subjectView="clr-namespace:SchoolJournal.Desktop.Features.Core.Subject"
+    xmlns:subjectVm="clr-namespace:SchoolJournal.Client.Core.Features.Core.Subject;assembly=SchoolJournal.Client.Core">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+
+        <DataTemplate DataType="{x:Type semesterVm:SemestersViewModel}">
+            <semesterView:SemestersView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type subjectVm:SubjectsViewModel}">
+            <subjectView:SubjectsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type qualificationVm:QualificationsViewModel}">
+            <qualificationView:QualificationsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type pedagogicalTitleVm:PedagogicalTitlesViewModel}">
+            <pedagogicalTitleView:PedagogicalTitlesView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type gradeTypeVm:GradeTypesViewModel}">
+            <gradeTypeView:GradeTypesView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type positionVm:PositionsViewModel}">
+            <positionView:PositionsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type lessonTypeVm:LessonTypesViewModel}">
+            <lessonTypeView:LessonTypesView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type bellScheduleVm:BellSchedulesViewModel}">
+            <bellScheduleView:BellSchedulesView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type classroomVm:ClassroomsViewModel}">
+            <classroomView:ClassroomsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type SystemSettingsVm:SystemSettingsViewModel}">
+            <SystemSettingsView:SystemSettingsView />
+        </DataTemplate>
+
+
+        <Style x:Key="SettingsTabButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Background" Value="#ECF0F1" />
+            <Setter Property="Foreground" Value="#2C3E50" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#BDC3C7" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel
+                Margin="20,20,10,20"
+                Background="Transparent"
+                Orientation="Vertical">
+
+                <Expander
+                    Margin="0,0,0,10"
+                    Background="#FAFAFA"
+                    FontWeight="Bold"
+                    Foreground="#2C3E50"
+                    Header="🏢 Організація закладу"
+                    IsExpanded="True">
+                    <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                        <Button
+                            Command="{Binding NavigateToSystemSettingsCommand}"
+                            Content="⚙️ Системні налаштування"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToSemestersCommand}"
+                            Content="📅 Семестри"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToBellSchedulesCommand}"
+                            Content="⏰ Розклад дзвінків"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToClassroomsCommand}"
+                            Content="🚪 Аудиторії"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                    </StackPanel>
+                </Expander>
+
+                <Expander
+                    Margin="0,0,0,10"
+                    Background="#FAFAFA"
+                    FontWeight="Bold"
+                    Foreground="#2C3E50"
+                    Header="🎓 Навчальний процес"
+                    IsExpanded="True">
+                    <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                        <Button
+                            Command="{Binding NavigateToGradeTypesCommand}"
+                            Content="📝 Типи оцінок"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToLessonTypesCommand}"
+                            Content="📖 Типи уроків"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToSubjectsCommand}"
+                            Content="📚 Предмети"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                    </StackPanel>
+                </Expander>
+
+                <Expander
+                    Margin="0,0,0,10"
+                    Background="#FAFAFA"
+                    FontWeight="Bold"
+                    Foreground="#2C3E50"
+                    Header="📋 Кадри"
+                    IsExpanded="True">
+                    <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                        <Button
+                            Command="{Binding NavigateToPositionsCommand}"
+                            Content="💼 Посади"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToQualificationsCommand}"
+                            Content="🎓 Кваліфікації"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                        <Button
+                            Command="{Binding NavigateToPedagogicalTitlesCommand}"
+                            Content="🎖️ Звання"
+                            Style="{StaticResource SettingsTabButtonStyle}" />
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border
+            Grid.Column="1"
+            Margin="20"
+            Background="White"
+            CornerRadius="5">
+            <ContentControl Content="{Binding CurrentSettingsView}" />
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,111 @@
+﻿<Window
+    x:Class="SchoolJournal.Desktop.Features.Identity.Login.LoginWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Вхід у систему"
+    Width="350"
+    Height="450"
+    Background="{DynamicResource SpaceBackgroundBrush}"
+    Foreground="{DynamicResource TextPrimaryBrush}"
+    Icon="pack://application:,,,/Resources/Images/app_logo.ico"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <TextBlock
+                Grid.Row="0"
+                Margin="0,0,0,30"
+                Style="{DynamicResource LogoTextBlockStyle}">
+                LUNALIA<LineBreak />
+                <Run Style="{DynamicResource LogoRunStyle}">S P A C E</Run>
+            </TextBlock>
+        </Grid>
+
+        <TextBlock
+            Grid.Row="1"
+            Margin="0,0,0,5"
+            Text="Логін:" />
+        <TextBox
+            Grid.Row="2"
+            Margin="0,0,0,15"
+            MaxLength="50"
+            Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.Style>
+                <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+
+        <TextBlock
+            Grid.Row="3"
+            Margin="0,0,0,5"
+            Text="Пароль:" />
+        <PasswordBox
+            x:Name="UserPasswordBox"
+            Grid.Row="4"
+            Margin="0,0,0,20"
+            MaxLength="50"
+            PasswordChanged="UserPasswordBox_PasswordChanged">
+            <PasswordBox.Style>
+                <Style BasedOn="{StaticResource {x:Type PasswordBox}}" TargetType="PasswordBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </PasswordBox.Style>
+        </PasswordBox>
+
+        <TextBlock
+            Grid.Row="5"
+            Margin="0,0,0,15"
+            HorizontalAlignment="Center"
+            Foreground="{DynamicResource ErrorBrush}"
+            Text="{Binding ErrorMessage}"
+            TextWrapping="Wrap" />
+
+        <Button Grid.Row="6" Command="{Binding ExecuteLoginCommand}">
+            <Button.Style>
+                <Style BasedOn="{StaticResource SpacePrimaryButton}" TargetType="Button">
+                    <Setter Property="Content" Value="Увійти" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="Content" Value="Зачекайте..." />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <ProgressBar
+            Grid.Row="7"
+            Height="4"
+            Margin="0,15,0,0"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            BorderThickness="0"
+            Foreground="BlueViolet"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+    </Grid>
+</Window>

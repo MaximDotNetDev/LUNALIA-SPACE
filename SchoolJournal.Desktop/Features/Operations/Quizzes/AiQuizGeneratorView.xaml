@@ -1,0 +1,296 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Operations.Quizzes.AiQuizGeneratorView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:quizzes="clr-namespace:SchoolJournal.Client.Core.Features.Operations.Quizzes;assembly=SchoolJournal.Client.Core">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" MinWidth="500" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Column="0"
+                Padding="15"
+                Style="{StaticResource SpacePanelBorderStyle}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,0,5,0">
+                        <TextBlock
+                            Margin="0,0,0,15"
+                            Style="{StaticResource PageHeaderTextStyle}"
+                            Text="⚙️ Налаштування генерації" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Шлях до PDF файлу:" />
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                IsReadOnly="True"
+                                Text="{Binding SelectedFileName, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="1"
+                                Margin="5,0,0,0"
+                                Padding="15,0"
+                                Click="BrowseFile_Click"
+                                Content="📁 Огляд"
+                                Style="{StaticResource SpaceActionInfoButton}" />
+                        </Grid>
+
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Зі сторінки:" />
+                                <TextBox Text="{Binding StartPage, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="По сторінку:" />
+                                <TextBox Text="{Binding EndPage, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Загальна кількість питань/слів:" />
+                        <TextBox Margin="0,0,0,15" Text="{Binding TotalQuestions, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Балів за одне завдання:" />
+                        <TextBox Margin="0,0,0,15" Text="{Binding PointsPerQuestion, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontWeight="SemiBold"
+                            Text="Формат завдання:" />
+                        <ComboBox
+                            x:Name="QuizTypeComboBox"
+                            Margin="0,0,0,15"
+                            ItemsSource="{Binding QuizTypes}"
+                            SelectedItem="{Binding SelectedQuizType}" />
+
+                        <StackPanel Visibility="{Binding IsMultipleChoiceSelected, Converter={StaticResource BoolToVis}}">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontWeight="SemiBold"
+                                Text="З кількома відповідями:" />
+                            <TextBox Margin="0,0,0,10" Text="{Binding MultiAnswerCount, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontWeight="SemiBold"
+                                Text="На судження:" />
+                            <TextBox Margin="0,0,0,15" Text="{Binding JudgmentCount, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <Button
+                            Margin="0,10,0,10"
+                            Command="{Binding GenerateQuizCommand}"
+                            CommandParameter="{Binding SelectedItem, ElementName=QuizTypeComboBox}"
+                            Content="✨ Згенерувати"
+                            Style="{StaticResource SpacePrimaryButton}" />
+
+                        <TextBlock
+                            Margin="0,10,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource AccentTextStyle}"
+                            Text="⏳ Зачекайте, генерується..."
+                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="0,0,0,10"
+                    VerticalAlignment="Top"
+                    Panel.ZIndex="10">
+                    <Border
+                        Margin="0,0,0,10"
+                        Padding="15"
+                        Background="{DynamicResource SpaceBackgroundBrush}"
+                        BorderBrush="{StaticResource ErrorTextBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}">
+                        <TextBlock Style="{StaticResource ErrorTextStyle}" Text="{Binding ErrorMessage}" />
+                    </Border>
+                    <Border
+                        Margin="0,0,0,10"
+                        Padding="15"
+                        Background="{DynamicResource SpaceBackgroundBrush}"
+                        BorderBrush="#2ECC71"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="{Binding SuccessMessage, Converter={StaticResource UniversalVis}}">
+                        <TextBlock
+                            FontWeight="Medium"
+                            Foreground="#2ECC71"
+                            Text="{Binding SuccessMessage}"
+                            TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+
+                <Border
+                    Grid.Row="0"
+                    Margin="0,10,0,0"
+                    Padding="20"
+                    Style="{StaticResource SpacePanelBorderStyle}">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding GeneratedQuiz, Converter={StaticResource UniversalVis}}">
+                        <StackPanel Margin="0,0,10,0">
+
+                            <Border
+                                Margin="0,0,0,20"
+                                Padding="15"
+                                Background="{DynamicResource SpaceBackgroundBrush}"
+                                CornerRadius="10">
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Style="{StaticResource AccentTextStyle}"
+                                        Text="НАЗВА ТЕСТУ:" />
+                                    <TextBox
+                                        Margin="0,5,0,0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        Text="{Binding GeneratedQuiz.Title, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Border>
+
+                            <ItemsControl ItemsSource="{Binding GeneratedQuiz.Questions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Margin="0,0,0,10"
+                                            Padding="15"
+                                            Background="{DynamicResource SpaceBackgroundBrush}"
+                                            CornerRadius="10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="14"
+                                                    FontWeight="Bold"
+                                                    Style="{StaticResource AccentTextStyle}"
+                                                    Text="{Binding OrderIndex, StringFormat='{}{0}.'}" />
+
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontSize="14"
+                                                    Foreground="{DynamicResource TextPrimaryBrush}"
+                                                    Text="{Binding QuestionText}"
+                                                    TextWrapping="Wrap" />
+
+                                                <Border
+                                                    Grid.Column="2"
+                                                    Margin="15,0,0,0"
+                                                    Padding="8,4"
+                                                    VerticalAlignment="Top"
+                                                    Background="{DynamicResource SurfaceBrush}"
+                                                    CornerRadius="4">
+                                                    <TextBlock
+                                                        FontSize="12"
+                                                        FontWeight="Bold"
+                                                        Foreground="#2ECC71"
+                                                        Text="{Binding Points, StringFormat='{}{0} б.'}" />
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <Border
+                    Grid.Row="1"
+                    Margin="0,15,0,0"
+                    Padding="15"
+                    Style="{StaticResource SpacePanelBorderStyle}"
+                    Visibility="{Binding GeneratedQuiz, Converter={StaticResource UniversalVis}}">
+
+                    <WrapPanel VerticalAlignment="Center" Orientation="Horizontal">
+
+                        <StackPanel Margin="0,0,20,10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Style="{StaticResource AccentTextStyle}"
+                                Text="ПРИЗНАЧИТИ КЛАСУ:" />
+                            <ComboBox
+                                MinWidth="150"
+                                DisplayMemberPath="ClassName"
+                                ItemsSource="{Binding Classes}"
+                                SelectedValue="{Binding SelectedClassId, UpdateSourceTrigger=PropertyChanged}"
+                                SelectedValuePath="ClassId" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,0,20,10">
+                            <TextBlock
+                                Margin="0,0,0,5"
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Style="{StaticResource AccentTextStyle}"
+                                Text="ПРЕДМЕТ ЖУРНАЛУ:" />
+                            <ComboBox
+                                MinWidth="250"
+                                DisplayMemberPath="SubjectName"
+                                ItemsSource="{Binding Subjects}"
+                                SelectedValue="{Binding SelectedSubjectId, UpdateSourceTrigger=PropertyChanged}"
+                                SelectedValuePath="SubjectId" />
+                        </StackPanel>
+
+                        <Button
+                            Margin="0,0,0,10"
+                            Padding="20,10"
+                            VerticalAlignment="Bottom"
+                            Command="{Binding SaveGeneratedQuizCommand}"
+                            Content="💾 Зберегти в систему"
+                            Style="{StaticResource SpaceActionSuccessButton}" />
+
+                    </WrapPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,144 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Core.SchoolClasses.SchoolClassesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters">
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="Керування класами" />
+            <Button
+                Margin="20,0,0,0"
+                Padding="15,5"
+                Background="#2ECC71"
+                Command="{Binding OpenCreateFormCommand}"
+                Content="➕ Додати клас"
+                Foreground="White"
+                Visibility="{Binding IsAdminOrDirector, Converter={StaticResource UniversalVis}}" />
+        </StackPanel>
+
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding Classes}">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="100"
+                    Binding="{Binding ClassName}"
+                    Header="Клас" />
+                <DataGridTextColumn
+                    Width="80"
+                    Binding="{Binding GradeLevel}"
+                    Header="Рівень" />
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding AcademicYear}"
+                    Header="Навчальний рік" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding HomeroomTeacherFullName}"
+                    Header="Класний керівник" />
+                <DataGridTemplateColumn Width="80" Visibility="{Binding DataContext.IsAdminOrDirector, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource UniversalVis}}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                Background="#F39C12"
+                                Command="{Binding DataContext.OpenEditFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                CommandParameter="{Binding}"
+                                Content="✏️"
+                                Foreground="White" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Grid
+            Grid.RowSpan="2"
+            Panel.ZIndex="100"
+            Background="#80000000"
+            Visibility="{Binding IsFormOpen, Converter={StaticResource UniversalVis}}">
+            <Border
+                Width="400"
+                Padding="25"
+                VerticalAlignment="Center"
+                Background="White"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Text="{Binding FormTitle}" />
+
+                    <TextBlock Text="Назва класу:" />
+                    <TextBox Margin="0,5,0,15" Text="{Binding ClassName}" />
+
+                    <TextBlock Text="Класний керівник:" />
+                    <ComboBox
+                        Margin="0,5,0,20"
+                        DisplayMemberPath="LastName"
+                        ItemsSource="{Binding Teachers}"
+                        SelectedItem="{Binding SelectedTeacher}" />
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Рівень (1-12):" />
+                            <TextBox Margin="0,5,0,0" Text="{Binding GradeLevel}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Навчальний рік:" />
+                            <TextBox Margin="0,5,0,0" Text="{Binding AcademicYear}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        HorizontalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Foreground="#E74C3C"
+                        Text="{Binding ErrorMessage}"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Padding="10"
+                            Command="{Binding CloseFormCommand}"
+                            Content="Скасувати" />
+                        <Button
+                            Grid.Column="2"
+                            Padding="10"
+                            Background="#3498DB"
+                            Command="{Binding SaveCommand}"
+                            Content="Зберегти"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

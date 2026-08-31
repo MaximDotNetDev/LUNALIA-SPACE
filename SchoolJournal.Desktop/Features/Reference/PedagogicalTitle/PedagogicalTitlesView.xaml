@@ -1,0 +1,208 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Reference.PedagogicalTitle.PedagogicalTitlesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SchoolJournal.Desktop.Common.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:UniversalVisibilityConverter x:Key="UniversalVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="200" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,15"
+            Orientation="Horizontal">
+            <TextBlock
+                FontSize="18"
+                FontWeight="Bold"
+                Text="Педагогічні звання" />
+            <Button
+                Margin="20,0,0,0"
+                Padding="15,5"
+                Background="#2ECC71"
+                Command="{Binding OpenCreateFormCommand}"
+                Content="➕ Створити звання"
+                Foreground="White" />
+            <TextBlock
+                Margin="20,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="Red"
+                Text="{Binding ErrorMessage}"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+        </StackPanel>
+
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            IsReadOnly="True"
+            ItemsSource="{Binding ActiveTitles}">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding TitleName}"
+                    Header="Назва звання" />
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}"
+                    Header="Дата створення" />
+                <DataGridTemplateColumn Width="120" Header="Дії">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,5,0"
+                                    Background="#F39C12"
+                                    Command="{Binding DataContext.OpenEditFormCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="✏️"
+                                    FontSize="12"
+                                    Foreground="White" />
+                                <Button
+                                    Background="#E74C3C"
+                                    Command="{Binding DataContext.DeleteTitleCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Видалити"
+                                    FontSize="10"
+                                    Foreground="White" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <GroupBox
+            Grid.Row="3"
+            Margin="0,15,0,0"
+            Header="Архів (видалені звання)">
+            <Grid>
+                <DataGrid
+                    AutoGenerateColumns="False"
+                    Background="#FDFDFD"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding ArchivedTitles}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding TitleName}"
+                            Header="Назва" />
+                        <DataGridTemplateColumn Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Background="#3498DB"
+                                        Command="{Binding DataContext.RestoreTitleCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Відновити"
+                                        FontSize="10"
+                                        Foreground="White" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    IsHitTestVisible="False"
+                    Text="Архів порожній"
+                    Visibility="{Binding ArchivedTitles.Count, Converter={StaticResource UniversalVis}, ConverterParameter='Inverse'}" />
+            </Grid>
+        </GroupBox>
+
+        <ProgressBar
+            Grid.Row="1"
+            Height="4"
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource UniversalVis}}" />
+
+        <Grid
+            Grid.RowSpan="4"
+            Panel.ZIndex="100"
+            Background="#80000000"
+            Visibility="{Binding IsFormOpen, Converter={StaticResource UniversalVis}}">
+            <Border
+                Width="400"
+                Padding="25"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                CornerRadius="8">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="15"
+                        Direction="270"
+                        Opacity="0.25"
+                        ShadowDepth="2" />
+                </Border.Effect>
+
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="{Binding FormTitleText}" />
+
+                    <TextBlock
+                        Margin="0,0,0,15"
+                        Foreground="Red"
+                        Text="{Binding ErrorMessage}"
+                        TextWrapping="Wrap"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource UniversalVis}}" />
+
+                    <TextBlock
+                        Margin="0,0,0,5"
+                        FontWeight="SemiBold"
+                        Foreground="#555"
+                        Text="Назва педагогічного звання:" />
+                    <TextBox
+                        Margin="0,0,0,25"
+                        Padding="5"
+                        Text="{Binding FormTitleName, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button
+                            Grid.Column="0"
+                            Padding="10"
+                            Background="#95A5A6"
+                            Command="{Binding CloseFormCommand}"
+                            Content="Скасувати"
+                            FontWeight="Bold"
+                            Foreground="White" />
+
+                        <Button
+                            Grid.Column="2"
+                            Padding="10"
+                            Background="#3498DB"
+                            Command="{Binding SaveFormCommand}"
+                            Content="Зберегти"
+                            FontWeight="Bold"
+                            Foreground="White" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

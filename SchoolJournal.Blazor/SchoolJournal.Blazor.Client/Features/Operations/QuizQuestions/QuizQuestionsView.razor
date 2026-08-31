@@ -1,0 +1,177 @@
+﻿@using SchoolJournal.Client.Core.Features.Operations.QuizQuestions
+@implements IDisposable
+
+<div class="questions-container">
+
+    <div class="questions-header">
+        <h2 class="page-title">Редактор питань тесту</h2>
+        <button class="btn-success" @onclick="() => ViewModel.OpenCreateFormCommand.Execute(null)">➕ Додати питання</button>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
+        {
+            <span class="error-text">@ViewModel.ErrorMessage</span>
+        }
+    </div>
+
+    <div class="table-container">
+        @if (ViewModel.IsLoading && !ViewModel.IsFormOpen)
+        {
+            <div class="loading-bar"><div class="progress-bar-indeterminate"></div></div>
+        }
+
+        <table class="space-table">
+            <thead>
+                <tr>
+                    <th style="width: 100px; text-align: center;">Порядок</th>
+                    <th style="width: 60px;">Бали</th>
+                    <th style="width: 120px;">Тип</th>
+                    <th style="width: 450px;">Текст питання</th>
+                    <th style="width: 200px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var question in ViewModel.Questions)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <div class="order-actions">
+                                <button class="btn-icon btn-info" title="Вгору" @onclick="() => ViewModel.MoveUpCommand.Execute(question)">▲</button>
+                                <button class="btn-icon btn-info" title="Вниз" @onclick="() => ViewModel.MoveDownCommand.Execute(question)">▼</button>
+                            </div>
+                        </td>
+                        <td class="text-center font-bold">@question.Points</td>
+                        <td>
+                            <span class="type-badge @GetBadgeClass(question.QuestionType)">
+                                @GetTypeName(question.QuestionType)
+                            </span>
+                        </td>
+                        <td class="text-wrap">@question.QuestionText</td>
+                        <td class="actions-cell">
+                            <button class="btn-warning" @onclick="() => ViewModel.OpenEditFormCommand.Execute(question)">✏️ Ред.</button>
+                            <button class="btn-danger" @onclick="() => ViewModel.DeleteQuestionCommand.Execute(question)">✖ Видалити</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewModel.IsFormOpen)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content space-panel-border modal-large">
+                <h3 class="modal-title">@ViewModel.FormTitle</h3>
+
+                <div class="modal-scroll-area">
+                    <label class="form-label">Текст питання:</label>
+                    <textarea class="space-input" rows="3" @bind="ViewModel.FormQuestionText" @bind:event="oninput"></textarea>
+
+                    <div class="row-group">
+                        <div class="input-group half-width">
+                            <label class="form-label">Тип питання:</label>
+                            <select class="space-input" @bind="ViewModel.FormQuestionType">
+                                <option value="0">0 - Звичайний вибір</option>
+                                <option value="1">1 - Аналіз суджень</option>
+                                <option value="9">9 - Кросворд</option>
+                            </select>
+                        </div>
+                        <div class="input-group half-width">
+                            <label class="form-label">Бали:</label>
+                            <input type="number" class="space-input" @bind="ViewModel.FormPoints" @bind:event="oninput" />
+                        </div>
+                    </div>
+
+                    @if (ViewModel.FormQuestionType != 9)
+                    {
+                        <label class="form-label mt-2">Варіанти відповідей (позначте правильні):</label>
+                        <div class="options-container">
+                            @foreach (var opt in ViewModel.FormOptions)
+                            {
+                                <div class="option-row">
+                                    <input type="checkbox" class="option-checkbox" @bind="opt.IsCorrect" />
+                                    <input type="text" class="space-input option-input" @bind="opt.Text" @bind:event="oninput" />
+                                    <button class="btn-icon btn-danger" title="Видалити" @onclick="() => ViewModel.RemoveOptionCommand.Execute(opt)">✖</button>
+                                </div>
+                            }
+                        </div>
+                        <button class="btn-success mt-2" @onclick="() => ViewModel.AddOptionCommand.Execute(null)">➕ Додати варіант</button>
+                    }
+                    else
+                    {
+                        <div class="crossword-alert mt-2">
+                            <span class="accent-text font-bold">Слова кросворду (Можна редагувати лише загадки):</span><br />
+                            <span class="error-text text-small">УВАГА: Відповіді змінити неможливо. Вони жорстко зашиті у згенеровану сітку кросворду (зміна літер зламає перетини).</span>
+                        </div>
+
+                        <div class="crossword-table-wrapper">
+                            <table class="space-table compact-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">№</th>
+                                        <th style="width: 150px;">Слово</th>
+                                        <th>Загадка</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var word in ViewModel.FormCrosswordWords)
+                                    {
+                                        <tr>
+                                            <td class="text-center">@word.Number</td>
+                                            <td class="font-bold">@word.Answer</td>
+                                            <td>
+                                                <input type="text" class="space-input compact-input" @bind="word.Clue" @bind:event="oninput" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div class="modal-actions mt-3">
+                    <button class="btn-secondary" @onclick="() => ViewModel.CloseFormCommand.Execute(null)">Скасувати</button>
+                    <button class="btn-primary" disabled="@ViewModel.IsLoading" @onclick="() => ViewModel.SaveFormCommand.Execute(null)">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public QuizQuestionsViewModel ViewModel { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    // Хелпери для красивого відображення типів питань у таблиці
+    private static string GetTypeName(int type) => type switch
+    {
+        1 => "Судження",
+        9 => "Кросворд",
+        _ => "Звичайне"
+    };
+
+    private static string GetBadgeClass(int type) => type switch
+    {
+        1 => "badge-accent",
+        9 => "badge-warning",
+        _ => "badge-normal"
+    };
+
+    public void Dispose()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+    }
+}
