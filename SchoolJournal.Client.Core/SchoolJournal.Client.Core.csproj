@@ -25,8 +25,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Infrastructure\Common\" />
-		<Compile Include="Features\Infrastructure\Logs\**\*.cs" />
-		<Folder Include="Features\Reference\Common\" />
+	  <Folder Include="Features\Reference\Common\" />
 	</ItemGroup>
 	
 </Project>
