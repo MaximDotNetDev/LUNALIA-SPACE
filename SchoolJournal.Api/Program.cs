@@ -31,7 +31,7 @@ builder.Services.AddOpenApi(options =>
         document.Servers?.Clear(); // Очищаємо автозгенеровані сервери, щоб уникнути дублів
         document.Servers?.Add(new Microsoft.OpenApi.OpenApiServer
         {
-            Url = "https://lunalia-space-api.serveousercontent.com"
+            Url = "https://lunalia-space.onrender.com" // Оновлена адреса
         });
         return Task.CompletedTask;
     });
@@ -83,8 +83,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:7223",
                 "https://192.168.137.1:7223", // Додали доступ для телефону!
                 "https://192.168.1.104:7223", // Додали актуальну адресу домашнього Wi-Fi
-                "https://lunalia-space-api.serveousercontent.com", // Додали продакшн адресу API
-                "https://lunalia-space-site.serveousercontent.com" // Дозволяємо запити від тунелю сайту
+                "https://lunalia-space.onrender.com",
+                "https://lunalia-space.pages.dev" // Додаємо майбутню адресу вашого фронтенду на Cloudflare
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -98,8 +98,7 @@ app.UseForwardedHeaders();
 
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     app.UseSwaggerUI(options =>
@@ -107,7 +106,6 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "SchoolJournal API v1");
         options.RoutePrefix = "swagger";
     });
-}
 
 app.UseHttpsRedirection();
 
