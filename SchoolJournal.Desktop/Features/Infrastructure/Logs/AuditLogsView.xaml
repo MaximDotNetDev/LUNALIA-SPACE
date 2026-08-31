@@ -1,0 +1,100 @@
+﻿<UserControl
+    x:Class="SchoolJournal.Desktop.Features.Infrastructure.Logs.AuditLogsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:SchoolJournal.Desktop.Features.Infrastructure.Logs">
+    <UserControl.Resources>
+        <local:JsonPrettifyConverter x:Key="JsonPrettifyConverter" />
+    </UserControl.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+            <DatePicker
+                Width="150"
+                Margin="0,0,10,0"
+                SelectedDate="{Binding FromDate}" />
+            <DatePicker
+                Width="150"
+                Margin="0,0,10,0"
+                SelectedDate="{Binding ToDate}" />
+            <Button
+                Padding="20,5"
+                Background="#3498DB"
+                Command="{Binding LoadLogsCommand}"
+                Content="Оновити"
+                FontWeight="Bold"
+                Foreground="White" />
+        </StackPanel>
+
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            IsReadOnly="True"
+            ItemsSource="{Binding Logs}">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding OccurredAtUtc, StringFormat='yyyy-MM-dd HH:mm:ss'}"
+                    Header="Час (UTC+0)" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding UserLogin}"
+                    Header="Користувач" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding Action}"
+                    Header="Дія" />
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding EntityName}"
+                    Header="Об'єкт" />
+                <DataGridTextColumn
+                    Width="200"
+                    Binding="{Binding EntityRef}"
+                    Header="ID Об'єкта" />
+                <DataGridTemplateColumn Width="*" Header="Деталі">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Expander Header="Дані">
+                                <StackPanel Margin="5">
+                                    <TextBlock
+                                        Margin="0,0,0,2"
+                                        FontWeight="SemiBold"
+                                        Foreground="#555"
+                                        Text="Було (OldValue):" />
+                                    <TextBox
+                                        MaxHeight="150"
+                                        Margin="0,0,0,10"
+                                        Background="#F9F9F9"
+                                        IsReadOnly="True"
+                                        Text="{Binding OldValue, Converter={StaticResource JsonPrettifyConverter}}"
+                                        TextWrapping="Wrap"
+                                        VerticalScrollBarVisibility="Auto" />
+
+                                    <TextBlock
+                                        Margin="0,0,0,2"
+                                        FontWeight="SemiBold"
+                                        Foreground="#555"
+                                        Text="Стало / Деталі (NewValue):" />
+                                    <TextBox
+                                        MaxHeight="150"
+                                        Background="#F9F9F9"
+                                        IsReadOnly="True"
+                                        Text="{Binding NewValue, Converter={StaticResource JsonPrettifyConverter}}"
+                                        TextWrapping="Wrap"
+                                        VerticalScrollBarVisibility="Auto" />
+                                </StackPanel>
+                            </Expander>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
