@@ -83,10 +83,11 @@ builder.Services.AddCors(options =>
                 "https://localhost:7223",
                 "https://192.168.137.1:7223",
                 "https://192.168.1.104:7223",
-                "https://lunalia-space.onrender.com",
+                "https://lunalia-space_api.onrender.com",
                 "https://lunalia-space.pages.dev",
-                "https://lunalia-blazor.onrender.com" // Додана адреса вашого фронтенду на Render
+                "https://lunalia-space.onrender.com" // Додана адреса вашого фронтенду на Render
               )
+
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
