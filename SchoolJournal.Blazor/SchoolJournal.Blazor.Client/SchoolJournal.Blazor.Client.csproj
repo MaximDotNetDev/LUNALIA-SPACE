@@ -14,8 +14,8 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SchoolJournal.Client.Core\SchoolJournal.Client.Core.csproj" />
-		<ProjectReference Include="..\SchoolJournal.Contracts\SchoolJournal.Contracts.csproj" />
+		<ProjectReference Include="..\..\SchoolJournal.Client.Core\SchoolJournal.Client.Core.csproj" />
+		<ProjectReference Include="..\..\SchoolJournal.Contracts\SchoolJournal.Contracts.csproj" />
 	</ItemGroup>
 	
 </Project>
