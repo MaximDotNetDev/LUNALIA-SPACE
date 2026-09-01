@@ -1,128 +1,152 @@
 ﻿@inherits LayoutComponentBase
 @implements IDisposable
 @using SchoolJournal.Client.Core.Features.Shell
+@using SchoolJournal.Client.Core.Common.Auth
 @inject MainViewModel ViewModel
 @inject NavigationManager NavigationManager
+@inject ITokenStorageService TokenStorage
 
-<div class="shell-container">
+@if (_isCheckingAuth)
+{
+    <!-- Екран завантаження під час перевірки локального сховища -->
+    <div style="display:flex; height:100vh; align-items:center; justify-content:center; background-color:var(--space-background);">
+        <p style="color:var(--accent-color);">Завантаження...</p>
+    </div>
+}
+else
+    {
+    <div class="shell-container">
 
-    <div class="sidebar-card @(isSidebarExpanded ? "expanded" : "collapsed")">
+        <div class="sidebar-card @(isSidebarExpanded ? "expanded" : "collapsed")">
 
-        <div class="sidebar-header">
-            @if (isSidebarExpanded)
+            <div class="sidebar-header">
+                @if (isSidebarExpanded)
+                {
+                    <div class="logo-text">
+                        LUNALIA<br />
+                        <span class="logo-subtext">S P A C E</span>
+                    </div>
+                }
+            </div>
+
+            <div class="sidebar-menu">
+
+
+                <button class="menu-btn" @onclick="() => ViewModel.NavigateToTestingCommand.Execute(null)">
+                    <span class="icon">📝</span>
+                    @if (isSidebarExpanded)
+                    {
+                        <span class="text">Завдання</span>
+                    }
+                </button>
+
+
+                @if (ViewModel.IsAdminOrDirector)
+                {
+                    <button class="menu-btn" @onclick="() => ViewModel.NavigateToPeopleCommand.Execute(null)">
+                        <span class="icon">👨‍👩‍👧‍👦</span>
+                        @if (isSidebarExpanded)
+                        {
+                            <span class="text">Контингент</span>
+                        }
+                    </button>
+
+                    <button class="menu-btn" @onclick="() => ViewModel.NavigateToAcademicsCommand.Execute(null)">
+                        <span class="icon">🏫</span>
+                        @if (isSidebarExpanded)
+                        {
+                            <span class="text">Структура</span>
+                        }
+                    </button>
+
+                    <button class="menu-btn" @onclick="() => ViewModel.NavigateToSettingsCommand.Execute(null)">
+                        <span class="icon">⚙️</span>
+                        @if (isSidebarExpanded)
+                        {
+                            <span class="text">Налаштування</span>
+                        }
+                    </button>
+                }
+
+                @if (ViewModel.IsAdmin)
+                {
+                    <button class="menu-btn" @onclick="() => ViewModel.NavigateToAdministrationCommand.Execute(null)">
+                        <span class="icon">🛡️</span>
+                        @if (isSidebarExpanded)
+                        {
+                            <span class="text">Адміністрування</span>
+                        }
+                    </button>
+                }
+
+                <button class="menu-btn logout-btn" @onclick="Logout">
+                    <span class="icon">🚪</span>
+                    @if (isSidebarExpanded)
+                    {
+                        <span class="text">Вихід</span>
+                    }
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                @if (isSidebarExpanded)
+                {
+                    <select class="theme-select" @bind="ViewModel.SelectedTheme">
+                        @foreach (var theme in ViewModel.AvailableThemes)
+                        {
+                            <option value="@theme">@theme</option>
+                        }
+                    </select>
+                }
+                <button class="toggle-btn" @onclick="ToggleSidebar">
+                    @(isSidebarExpanded ? "❮" : "❯")
+                </button>
+            </div>
+        </div>
+
+        <div class="content-card">
+            @if (ViewModel.CurrentView is SchoolJournal.Client.Core.Features.Testing.TestingViewModel testingVm)
             {
-                <div class="logo-text">
-                    LUNALIA<br />
-                    <span class="logo-subtext">S P A C E</span>
+                <!-- @key змушує Blazor повністю знищити стару сторінку і створити нову, як у WPF -->
+                <SchoolJournal.Blazor.Client.Features.Testing.TestingView @key="testingVm" ViewModel="testingVm" />
+            }
+            else if (ViewModel.CurrentView is SchoolJournal.Client.Core.Features.Operations.QuizExecution.TakeQuizViewModel takeQuizVm)
+            {
+                <!-- Те саме робимо і для вікна проходження тесту -->
+                <SchoolJournal.Blazor.Client.Features.Operations.QuizExecution.TakeQuizView @key="takeQuizVm" ViewModel="takeQuizVm" />
+            }
+            else if (ViewModel.CurrentView != null)
+            {
+                <div class="dynamic-view-placeholder">
+                    <h2>Активна ViewModel: @ViewModel.CurrentView.GetType().Name</h2>
+                    <p>Компонент UI для цієї ViewModel ще не створено.</p>
                 </div>
             }
+            <div style="display: none;">@Body</div>
         </div>
 
-        <div class="sidebar-menu">
-
-
-            <button class="menu-btn" @onclick="() => ViewModel.NavigateToTestingCommand.Execute(null)">
-                <span class="icon">📝</span>
-                @if (isSidebarExpanded)
-                {
-                    <span class="text">Завдання</span>
-                }
-            </button>
-
-
-            @if (ViewModel.IsAdminOrDirector)
-            {
-                <button class="menu-btn" @onclick="() => ViewModel.NavigateToPeopleCommand.Execute(null)">
-                    <span class="icon">👨‍👩‍👧‍👦</span>
-                    @if (isSidebarExpanded)
-                    {
-                        <span class="text">Контингент</span>
-                    }
-                </button>
-
-                <button class="menu-btn" @onclick="() => ViewModel.NavigateToAcademicsCommand.Execute(null)">
-                    <span class="icon">🏫</span>
-                    @if (isSidebarExpanded)
-                    {
-                        <span class="text">Структура</span>
-                    }
-                </button>
-
-                <button class="menu-btn" @onclick="() => ViewModel.NavigateToSettingsCommand.Execute(null)">
-                    <span class="icon">⚙️</span>
-                    @if (isSidebarExpanded)
-                    {
-                        <span class="text">Налаштування</span>
-                    }
-                </button>
-            }
-
-            @if (ViewModel.IsAdmin)
-            {
-                <button class="menu-btn" @onclick="() => ViewModel.NavigateToAdministrationCommand.Execute(null)">
-                    <span class="icon">🛡️</span>
-                    @if (isSidebarExpanded)
-                    {
-                        <span class="text">Адміністрування</span>
-                    }
-                </button>
-            }
-
-            <button class="menu-btn logout-btn" @onclick="Logout">
-                <span class="icon">🚪</span>
-                @if (isSidebarExpanded)
-                {
-                    <span class="text">Вихід</span>
-                }
-            </button>
-        </div>
-
-        <div class="sidebar-footer">
-            @if (isSidebarExpanded)
-            {
-                <select class="theme-select" @bind="ViewModel.SelectedTheme">
-                    @foreach (var theme in ViewModel.AvailableThemes)
-                    {
-                        <option value="@theme">@theme</option>
-                    }
-                </select>
-            }
-            <button class="toggle-btn" @onclick="ToggleSidebar">
-                @(isSidebarExpanded ? "❮" : "❯")
-            </button>
-        </div>
     </div>
-
-    <div class="content-card">
-        @if (ViewModel.CurrentView is SchoolJournal.Client.Core.Features.Testing.TestingViewModel testingVm)
-        {
-            <!-- @key змушує Blazor повністю знищити стару сторінку і створити нову, як у WPF -->
-            <SchoolJournal.Blazor.Client.Features.Testing.TestingView @key="testingVm" ViewModel="testingVm" />
-        }
-        else if (ViewModel.CurrentView is SchoolJournal.Client.Core.Features.Operations.QuizExecution.TakeQuizViewModel takeQuizVm)
-        {
-            <!-- Те саме робимо і для вікна проходження тесту -->
-            <SchoolJournal.Blazor.Client.Features.Operations.QuizExecution.TakeQuizView @key="takeQuizVm" ViewModel="takeQuizVm" />
-        }
-        else if (ViewModel.CurrentView != null)
-        {
-            <div class="dynamic-view-placeholder">
-                <h2>Активна ViewModel: @ViewModel.CurrentView.GetType().Name</h2>
-                <p>Компонент UI для цієї ViewModel ще не створено.</p>
-            </div>
-        }
-        <div style="display: none;">@Body</div>
-    </div>
-
-</div>
+    }
 
 @code {
     private bool isSidebarExpanded = true;
+    private bool _isCheckingAuth = true;
 
-    protected override void OnInitialized()
+    // Змінено з void OnInitialized() на async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         ViewModel.OnLoggedOut += OnLoggedOut;
+
+        var tokens = await TokenStorage.GetTokensAsync();
+        if (string.IsNullOrEmpty(tokens.AccessToken))
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            _isCheckingAuth = false;
+        }
     }
 
     private void ToggleSidebar()
