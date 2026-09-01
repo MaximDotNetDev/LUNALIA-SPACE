@@ -1,36 +1,3 @@
-WHILE @@TRANCOUNT > 0 ROLLBACK;
-GO
-
-USE master;
-GO
-
-IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'DB_SchoolJournal')
-BEGIN
-PRINT N'1. Агресивно відключаємо всіх користувачів та блокування...';
-        ALTER DATABASE [DB_SchoolJournal] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-        
-        PRINT N'2. Видаляємо базу...';
-        DROP DATABASE [DB_SchoolJournal];
-        
-        PRINT N'БАЗУ УСПІШНО ЗНИЩЕНО!';
-        WAITFOR DELAY '00:00:05'; 
-    END
-
-    ELSE
-    BEGIN
-        PRINT N'Бази вже не існує. Можна створювати нову.';
-        END
-GO
-
-IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'DB_SchoolJournal')
-BEGIN
-RAISERROR(N'КРИТИЧНА ПОМИЛКА: Стару базу не видалено! Закрий інші активні вкладки/з''єднання до цієї БД і запусти скрипт цілком (F5).', 20, 1) WITH LOG;
-END
-GO
-
-CREATE DATABASE [DB_SchoolJournal];
-GO
-
 USE [DB_SchoolJournal];
 GO
 
