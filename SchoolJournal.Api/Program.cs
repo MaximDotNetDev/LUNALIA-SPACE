@@ -92,10 +92,11 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://localhost:7223",
-                "https://192.168.137.1:7223", // Додали доступ для телефону!
-                "https://192.168.1.104:7223", // Додали актуальну адресу домашнього Wi-Fi
+                "https://192.168.137.1:7223",
+                "https://192.168.1.104:7223",
                 "https://lunalia-space.onrender.com",
-                "https://lunalia-space.pages.dev" // Додаємо майбутню адресу вашого фронтенду на Cloudflare
+                "https://lunalia-space.pages.dev",
+                "https://lunalia-blazor.onrender.com" // Додана адреса вашого фронтенду на Render
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -124,8 +125,6 @@ app.UseHttpsRedirection();
 app.UseCors("BlazorWasmPolicy");
 
 app.UseRateLimiter();
-
-app.UseCors("AllowBlazorApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
