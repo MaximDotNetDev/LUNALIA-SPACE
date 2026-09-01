@@ -74,7 +74,6 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.Limits.MaxRequestBodySize = 268435456; // 256 МБ у байтах
 });
 
-// 3. Налаштовуємо CORS для Blazor WASM та зовнішніх сервісів
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("BlazorWasmPolicy", policy =>
@@ -83,11 +82,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:7223",
                 "https://192.168.137.1:7223",
                 "https://192.168.1.104:7223",
-                "https://lunalia-space_api.onrender.com",
-                "https://lunalia-space.pages.dev",
-                "https://lunalia-space.onrender.com" // Додана адреса вашого фронтенду на Render
+                "https://lunalia-blazor.onrender.com"
               )
-
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
