@@ -3,7 +3,8 @@ WORKDIR /src
 
 COPY . .
 
-WORKDIR /src/SchoolJournal.Blazor
+# Виправлений шлях із подвійною вкладеністю зі скріншота
+WORKDIR /src/SchoolJournal.Blazor/SchoolJournal.Blazor
 RUN dotnet publish "SchoolJournal.Blazor.csproj" -c Release -o /app/publish /p:UseAppHost=false -p:NoWarn=1591
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
