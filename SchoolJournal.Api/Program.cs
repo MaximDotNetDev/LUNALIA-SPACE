@@ -125,6 +125,8 @@ app.UseCors("BlazorWasmPolicy");
 
 app.UseRateLimiter();
 
+app.UseCors("AllowBlazorApp");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
