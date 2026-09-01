@@ -14,6 +14,17 @@ using SchoolJournal.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorApp", policy =>
+    {
+        policy.WithOrigins("https://lunalia-blazor.onrender.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Важливо, якщо ви передаєте токени або кукі
+    });
+});
+
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
