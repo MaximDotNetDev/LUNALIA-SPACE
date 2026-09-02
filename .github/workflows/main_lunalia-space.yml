@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Build with dotnet
-       run: dotnet build SchoolJournal.Api/SchoolJournal.Api.csproj --configuration Release /p:NoWarn=1591
+        run: dotnet build SchoolJournal.Api/SchoolJournal.Api.csproj --configuration Release /p:NoWarn=1591
 
       - name: dotnet publish
         run: dotnet publish SchoolJournal.Api/SchoolJournal.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp /p:NoWarn=1591
@@ -62,4 +62,3 @@ jobs:
           app-name: 'LUNALIA-SPACE'
           slot-name: 'Production'
           package: .
-          
