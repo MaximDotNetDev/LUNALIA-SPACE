@@ -80,7 +80,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://localhost:7223",
-                "https://azurewebsites.net"
+                "https://lunalia-space-web-bqdqa8fpdnbafjht.swedencentral-01.azurewebsites.net"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
