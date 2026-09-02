@@ -95,16 +95,16 @@ app.UseForwardedHeaders();
 app.UseExceptionHandler();
 
 //if (app.Environment.IsDevelopment())
-    app.MapOpenApi();
+app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "SchoolJournal API v1");
-        options.RoutePrefix = "swagger";
-    });
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "SchoolJournal API v1");
+    options.RoutePrefix = "swagger";
+});
 
 
-// Активуємо CORS політику перед авторизацією!
+// 🚀 Активуємо CORS політику перед авторизацією!
 app.UseCors("BlazorWasmPolicy");
 
 app.UseRateLimiter();
