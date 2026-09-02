@@ -31,7 +31,7 @@ builder.Services.AddOpenApi(options =>
         document.Servers?.Clear(); // Очищаємо автозгенеровані сервери, щоб уникнути дублів
         document.Servers?.Add(new Microsoft.OpenApi.OpenApiServer
         {
-            Url = "https://lunalia-space.onrender.com" // Оновлена адреса
+            Url = "https://azurewebsites.net"
         });
         return Task.CompletedTask;
     });
@@ -80,7 +80,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://localhost:7223",
-                "https://lunalia-space.onrender.com"
+                "https://azurewebsites.net"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
