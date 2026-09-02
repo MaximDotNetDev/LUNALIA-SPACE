@@ -27,14 +27,13 @@ jobs:
         run: dotnet build SchoolJournal.Api/SchoolJournal.Api.csproj --configuration Release /p:NoWarn=1591
 
       - name: dotnet publish
-        run: dotnet publish SchoolJournal.Api/SchoolJournal.Api.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp" /p:NoWarn=1591
-
+        run: dotnet publish SchoolJournal.Api/SchoolJournal.Api.csproj -c Release -o ./publish /p:NoWarn=1591
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
@@ -62,4 +61,4 @@ jobs:
         with:
           app-name: 'LUNALIA-SPACE'
           slot-name: 'Production'
-          package: myapp
+          package: ./publish
