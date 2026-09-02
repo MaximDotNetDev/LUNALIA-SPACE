@@ -27,7 +27,8 @@ jobs:
         run: dotnet build SchoolJournal.Api/SchoolJournal.Api.csproj --configuration Release /p:NoWarn=1591
 
       - name: dotnet publish
-        run: dotnet publish SchoolJournal.Api/SchoolJournal.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp /p:NoWarn=1591
+        run: dotnet publish SchoolJournal.Api/SchoolJournal.Api.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp" /p:NoWarn=1591
+
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
