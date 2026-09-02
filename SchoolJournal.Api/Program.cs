@@ -151,4 +151,6 @@ app.MapRegister();
 app.MapUpdateAccount();
 app.MapQuizSubmissions();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 await app.RunAsync().ConfigureAwait(false);
