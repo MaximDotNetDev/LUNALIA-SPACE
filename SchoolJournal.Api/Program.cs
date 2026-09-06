@@ -23,18 +23,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer((document, context, cancellationToken) =>
-    {
-        document.Servers?.Clear();
-        document.Servers?.Add(new Microsoft.OpenApi.OpenApiServer
-        {
-            Url = "https://lunalia-space-fmhuddejexdkd8ed.swedencentral-01.azurewebsites.net"
-        });
-        return Task.CompletedTask;
-    });
-});
+builder.Services.AddOpenApi();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
