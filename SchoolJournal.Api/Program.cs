@@ -23,15 +23,14 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddEndpointsApiExplorer();
 
-// НАЛАШТУВАННЯ OPENAPI: Додаємо сервери, щоб Swagger знав, куди штурхати запити
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
-        document.Servers?.Clear(); // Очищаємо автозгенеровані сервери, щоб уникнути дублів
+        document.Servers?.Clear();
         document.Servers?.Add(new Microsoft.OpenApi.OpenApiServer
         {
-            Url = "https://azurewebsites.net"
+            Url = "https://lunalia-space-fmhuddejexdkd8ed.swedencentral-01.azurewebsites.net"
         });
         return Task.CompletedTask;
     });
