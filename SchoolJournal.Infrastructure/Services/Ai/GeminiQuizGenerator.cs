@@ -386,6 +386,14 @@ public sealed class GeminiQuizGenerator : IAiQuizGenerator
         }
 
         var cleanedJson = CleanMarkdownJson(rawJson);
+
+        // ДОДАНО: Перевірка, чи відповідь дійсно починається як JSON
+        if (!cleanedJson.TrimStart().StartsWith('{') && !cleanedJson.TrimStart().StartsWith('['))
+        {
+            // Якщо ШІ повернув текст (наприклад відмову), показуємо цей текст користувачу
+            return Error.Unexpected(code: "Ai.NotJson", description: $"Модель ШІ відмовилася генерувати тест. Відповідь: {rawJson}");
+        }
+
         var result = JsonSerializer.Deserialize<T>(cleanedJson, JsonOptions);
 
         if (result is null)
