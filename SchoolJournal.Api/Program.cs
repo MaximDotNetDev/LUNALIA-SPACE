@@ -85,6 +85,14 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
+
+    // Нова політика спеціально для вашого Desktop інтерфейсу
+    options.AddPolicy("DesktopPolicy", policy =>
+    {
+        policy.AllowAnyOrigin() // Десктоп не має фіксованого вебсайту origin, тому дозволяємо будь-яке джерело
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
@@ -105,6 +113,7 @@ app.UseSwaggerUI(options =>
 
 // 🚀 Активуємо CORS політику перед авторизацією!
 app.UseCors("BlazorWasmPolicy");
+app.UseCors("DesktopPolicy");
 
 app.UseRateLimiter();
 
