@@ -92,9 +92,9 @@ internal static class TeachersEndpoint
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         app.MapGet("/api/teachers/by-user/{userId:guid}", GetTeacherByUserIdAsync)
-            .RequireRoles(RoleType.Admin, RoleType.Director)
+            .RequireRoles(RoleType.Admin, RoleType.Director, RoleType.Teacher)
             .WithTags(TeachersTag)
-            .WithSummary("Отримання інформації про вчителя за ідентифікатором користувача (Admin, Director)")
+            .WithSummary("Отримання інформації про вчителя за ідентифікатором користувача (Admin, Director, Teacher)")
             .Produces<TeacherResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
