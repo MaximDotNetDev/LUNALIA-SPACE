@@ -28,15 +28,34 @@ public enum AiQuizType
     Matching
 }
 
-public sealed partial class AiQuizGeneratorViewModel(
-    IAiGenerationApi aiGenerationApi,
-    IQuizzesApi quizzesApi,
-    ISubjectApi subjectApi,
-    ISchoolClassApi classApi,
-    ITeacherApi teacherApi,
-    ITokenStorageService tokenStorageService) : ObservableObject
+public sealed partial class AiQuizGeneratorViewModel : ObservableObject
 {
     private const string ProblemTitleKey = "title";
+
+    private readonly IAiGenerationApi aiGenerationApi;
+    private readonly IQuizzesApi quizzesApi;
+    private readonly ISubjectApi subjectApi;
+    private readonly ISchoolClassApi classApi;
+    private readonly ITeacherApi teacherApi;
+    private readonly ITokenStorageService tokenStorageService;
+
+    public AiQuizGeneratorViewModel(
+        IAiGenerationApi aiGenerationApi,
+        IQuizzesApi quizzesApi,
+        ISubjectApi subjectApi,
+        ISchoolClassApi classApi,
+        ITeacherApi teacherApi,
+        ITokenStorageService tokenStorageService)
+    {
+        this.aiGenerationApi = aiGenerationApi;
+        this.quizzesApi = quizzesApi;
+        this.subjectApi = subjectApi;
+        this.classApi = classApi;
+        this.teacherApi = teacherApi;
+        this.tokenStorageService = tokenStorageService;
+
+        _ = LoadInitialDataCommand.ExecuteAsync(null);
+    }
 
     [ObservableProperty] public partial bool IsLoading { get; set; }
     [ObservableProperty] public partial string? ErrorMessage { get; set; }
