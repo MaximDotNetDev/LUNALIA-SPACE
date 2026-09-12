@@ -64,26 +64,32 @@ public sealed class TeachingAssignmentQueries(SqlConnectionFactory connectionFac
         return await ExecutePagedQueryAsync(sql, new { SubjectId = subjectId, Skip = skip, Take = take }, cancellationToken).ConfigureAwait(false);
     }
 
+    private sealed record RawAssignment(
+        Guid AssignmentId, Guid TeacherId, string TeacherFullName,
+        Guid SubjectId, string SubjectName, Guid ClassId, string ClassName,
+        Guid? SubgroupId, string? SubgroupName, bool IsActive, byte[] RowVersion);
+
     private async Task<(IEnumerable<TeachingAssignmentResponse> Items, int TotalCount)> ExecutePagedQueryAsync(string sql, object parameters, CancellationToken cancellationToken)
     {
         using var connection = connectionFactory.CreateConnection();
         using var multi = await connection.QueryMultipleAsync(new CommandDefinition(sql, parameters, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
         var totalCount = await multi.ReadFirstAsync<int>().ConfigureAwait(false);
-        var rawItems = await multi.ReadAsync<dynamic>().ConfigureAwait(false);
+
+        var rawItems = await multi.ReadAsync<RawAssignment>().ConfigureAwait(false);
 
         var items = rawItems.Select(row => new TeachingAssignmentResponse(
-            (Guid)row.AssignmentId,
-            (Guid)row.TeacherId,
-            (string)row.TeacherFullName,
-            (Guid)row.SubjectId,
-            (string)row.SubjectName,
-            (Guid)row.ClassId,
-            (string)row.ClassName,
-            (Guid?)row.SubgroupId,     
-            (string?)row.SubgroupName, 
-            (bool)row.IsActive,
-            Convert.ToBase64String((byte[])row.RowVersion)
+            row.AssignmentId,
+            row.TeacherId,
+            row.TeacherFullName,
+            row.SubjectId,
+            row.SubjectName,
+            row.ClassId,
+            row.ClassName,
+            row.SubgroupId,
+            row.SubgroupName,
+            row.IsActive,
+            Convert.ToBase64String(row.RowVersion) 
         ));
 
         return (items, totalCount);
@@ -97,23 +103,24 @@ public sealed class TeachingAssignmentQueries(SqlConnectionFactory connectionFac
             """;
 
         using var connection = connectionFactory.CreateConnection();
-        var rawItem = await connection.QuerySingleOrDefaultAsync<dynamic>(new CommandDefinition(
+
+        var rawItem = await connection.QuerySingleOrDefaultAsync<RawAssignment>(new CommandDefinition(
             sql, new { AssignmentId = assignmentId }, cancellationToken: cancellationToken)).ConfigureAwait(false);
 
         if (rawItem is null) return null;
 
         return new TeachingAssignmentResponse(
-            (Guid)rawItem.AssignmentId,
-            (Guid)rawItem.TeacherId,
-            (string)rawItem.TeacherFullName,
-            (Guid)rawItem.SubjectId,
-            (string)rawItem.SubjectName,
-            (Guid)rawItem.ClassId,
-            (string)rawItem.ClassName,
-            (Guid?)rawItem.SubgroupId,      
-            (string?)rawItem.SubgroupName,  
-            (bool)rawItem.IsActive,
-            Convert.ToBase64String((byte[])rawItem.RowVersion)
+            rawItem.AssignmentId,
+            rawItem.TeacherId,
+            rawItem.TeacherFullName,
+            rawItem.SubjectId,
+            rawItem.SubjectName,
+            rawItem.ClassId,
+            rawItem.ClassName,
+            rawItem.SubgroupId,
+            rawItem.SubgroupName,
+            rawItem.IsActive,
+            Convert.ToBase64String(rawItem.RowVersion) 
         );
     }
 }
