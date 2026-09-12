@@ -64,10 +64,13 @@ public sealed class TeachingAssignmentQueries(SqlConnectionFactory connectionFac
         return await ExecutePagedQueryAsync(sql, new { SubjectId = subjectId, Skip = skip, Take = take }, cancellationToken).ConfigureAwait(false);
     }
 
+    // Вимикаємо перевірку аналізатора, оскільки клас створюється Dapper-ом через рефлексію
+#pragma warning disable CA1812
     private sealed record RawAssignment(
         Guid AssignmentId, Guid TeacherId, string TeacherFullName,
         Guid SubjectId, string SubjectName, Guid ClassId, string ClassName,
         Guid? SubgroupId, string? SubgroupName, bool IsActive, byte[] RowVersion);
+#pragma warning restore CA1812
 
     private async Task<(IEnumerable<TeachingAssignmentResponse> Items, int TotalCount)> ExecutePagedQueryAsync(string sql, object parameters, CancellationToken cancellationToken)
     {
