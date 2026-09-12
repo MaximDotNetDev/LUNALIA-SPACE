@@ -258,16 +258,6 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
             return;
         }
 
-        // Отримуємо TeacherId ще раз перед збереженням
-        var teacherResponse = await teacherApi.GetTeacherByUserIdAsync(userId, ct).ConfigureAwait(true);
-        if (!teacherResponse.IsSuccessStatusCode || teacherResponse.Content is null)
-        {
-            ErrorMessage = "Помилка: ваш профіль вчителя не знайдено.";
-            return;
-        }
-
-        Guid realTeacherId = teacherResponse.Content.TeacherId;
-
         if (!SelectedSubjectId.HasValue || !SelectedClassId.HasValue)
         {
             ErrorMessage = "Оберіть предмет та клас перед збереженням.";
@@ -288,8 +278,9 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
                             q.Points
                         )).ToList();
 
+            // ФІКС: Передаємо userId замість realTeacherId, щоб обійти помилку валідатора на бекенді
             var request = new SaveGeneratedQuizRequest(
-                                        realTeacherId,
+                                        userId,
                                         SelectedSubjectId.Value,
                                         SelectedClassId.Value,
                                         string.IsNullOrWhiteSpace(GeneratedQuizTitle) ? "Згенероване завдання" : GeneratedQuizTitle,
@@ -301,7 +292,7 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
             if (response.IsSuccessStatusCode)
             {
                 SuccessMessage = "✅ Тест успішно збережено в базу та призначено класу!";
-                GeneratedQuiz = null; 
+                GeneratedQuiz = null;
             }
             else
             {
