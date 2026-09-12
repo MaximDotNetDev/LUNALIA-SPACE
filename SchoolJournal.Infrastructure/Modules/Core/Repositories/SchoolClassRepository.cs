@@ -242,9 +242,6 @@ public sealed class SchoolClassRepository(SqlConnectionFactory connectionFactory
 
     public async Task<IEnumerable<SchoolClassItemModel>> GetByTeacherIdAsync(Guid teacherId, CancellationToken cancellationToken = default)
     {
-        // SQL шукає класи за ДВОМА умовами:
-        // 1. Вчитель є класним керівником (HomeroomTeacherId)
-        // 2. АБО вчитель має призначення на викладання у цьому класі (TeachingAssignments)
         const string sql = """
             SELECT 
                 c.ClassId, 
@@ -256,7 +253,8 @@ public sealed class SchoolClassRepository(SqlConnectionFactory connectionFactory
                 t.MiddleName AS HomeroomTeacherMiddleName,
                 TRIM(t.LastName + ' ' + t.FirstName + ' ' + ISNULL(t.MiddleName, '')) AS HomeroomTeacherFullName
             FROM [Core].[Classes] c
-            INNER JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
+            -- ЗМІНЕНО НА LEFT JOIN:
+            LEFT JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
             WHERE c.IsDeleted = 0 
               AND c.IsActive = 1
               AND (
