@@ -103,16 +103,16 @@ public sealed class TeachingAssignmentQueries(SqlConnectionFactory connectionFac
         if (rawItem is null) return null;
 
         return new TeachingAssignmentResponse(
-            rawItem.AssignmentId,
-            rawItem.TeacherId,
-            rawItem.TeacherFullName,
-            rawItem.SubjectId,
-            rawItem.SubjectName,
-            rawItem.ClassId,
-            rawItem.ClassName,
-            rawItem.SubgroupId,
-            rawItem.SubgroupName,
-            rawItem.IsActive,
+            (Guid)rawItem.AssignmentId,
+            (Guid)rawItem.TeacherId,
+            (string)rawItem.TeacherFullName,
+            (Guid)rawItem.SubjectId,
+            (string)rawItem.SubjectName,
+            (Guid)rawItem.ClassId,
+            (string)rawItem.ClassName,
+            (Guid?)rawItem.SubgroupId,      
+            (string?)rawItem.SubgroupName,  
+            (bool)rawItem.IsActive,
             Convert.ToBase64String((byte[])rawItem.RowVersion)
         );
     }
