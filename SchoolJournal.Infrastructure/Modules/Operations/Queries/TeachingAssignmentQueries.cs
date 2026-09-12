@@ -73,16 +73,16 @@ public sealed class TeachingAssignmentQueries(SqlConnectionFactory connectionFac
         var rawItems = await multi.ReadAsync<dynamic>().ConfigureAwait(false);
 
         var items = rawItems.Select(row => new TeachingAssignmentResponse(
-            row.AssignmentId,
-            row.TeacherId,
-            row.TeacherFullName,
-            row.SubjectId,
-            row.SubjectName,
-            row.ClassId,
-            row.ClassName,
-            row.SubgroupId,
-            row.SubgroupName,
-            row.IsActive,
+            (Guid)row.AssignmentId,
+            (Guid)row.TeacherId,
+            (string)row.TeacherFullName,
+            (Guid)row.SubjectId,
+            (string)row.SubjectName,
+            (Guid)row.ClassId,
+            (string)row.ClassName,
+            (Guid?)row.SubgroupId,     
+            (string?)row.SubgroupName, 
+            (bool)row.IsActive,
             Convert.ToBase64String((byte[])row.RowVersion)
         ));
 
