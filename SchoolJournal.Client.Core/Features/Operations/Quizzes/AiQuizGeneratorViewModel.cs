@@ -131,8 +131,9 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
             Guid? teacherId = await ResolveTeacherIdAsync(ct).ConfigureAwait(true);
             if (teacherId is null) return;
 
-            var classesTask = classApi.GetClassesByTeacherAsync(teacherId.Value, ct);
-            var subjectsTask = subjectApi.GetSubjectsByTeacherAsync(teacherId.Value, ct);
+            // Використовуємо стабільні ендпоінти, як у QuizzesViewModel
+            var classesTask = classApi.GetActiveClassesAsync(1, 1000, null, ct);
+            var subjectsTask = subjectApi.GetActiveSubjectsAsync(1, 1000, null, ct);
 
             await Task.WhenAll(classesTask, subjectsTask).ConfigureAwait(true);
 
@@ -140,27 +141,34 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
             var subjectsResult = await subjectsTask.ConfigureAwait(true);
 
             Classes.Clear();
-            foreach (var item in classesResult.Content ?? []) Classes.Add(item);
+            if (classesResult.IsSuccessStatusCode && classesResult.Content is not null)
+            {
+                // Беремо дані з .Items, оскільки ці ендпоінти повертають PagedResponse
+                foreach (var item in classesResult.Content.Items) Classes.Add(item);
+            }
 
             Subjects.Clear();
-            foreach (var item in subjectsResult.Content ?? []) Subjects.Add(item);
+            if (subjectsResult.IsSuccessStatusCode && subjectsResult.Content is not null)
+            {
+                foreach (var item in subjectsResult.Content.Items) Subjects.Add(item);
+            }
 
             if (Classes.Count == 0 || Subjects.Count == 0)
             {
-                ErrorMessage = "Дані отримано, але списки порожні. Перевірте, чи є у цього вчителя призначені класи/предмети, та чи збігається TeacherId з базою.";
+                ErrorMessage = "Списки порожні. Перевірте базу даних.";
             }
         }
         catch (ApiException ex)
         {
-            ErrorMessage = $"Помилка API при завантаженні довідників: {ex.StatusCode}";
+            ErrorMessage = $"Помилка API при завантаженні: {ex.StatusCode}";
         }
         catch (HttpRequestException ex)
         {
-            ErrorMessage = $"Помилка мережі при завантаженні довідників: {ex.Message}";
+            ErrorMessage = $"Помилка мережі при завантаженні: {ex.Message}";
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            ErrorMessage = $"Системна помилка при завантаженні: {ex.Message}";
+            ErrorMessage = $"Системна помилка: {ex.Message}";
         }
         finally
         {
