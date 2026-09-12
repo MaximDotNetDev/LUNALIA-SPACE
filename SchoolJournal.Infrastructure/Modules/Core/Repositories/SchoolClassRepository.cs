@@ -190,7 +190,7 @@ public sealed class SchoolClassRepository(SqlConnectionFactory connectionFactory
                 t.FirstName AS HomeroomTeacherFirstName, 
                 t.MiddleName AS HomeroomTeacherMiddleName
             FROM [Core].[Classes] c
-            INNER JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
+            LEFT JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
             WHERE c.ClassId = @ClassId 
               AND c.IsDeleted = 0;
             """;
@@ -221,7 +221,7 @@ public sealed class SchoolClassRepository(SqlConnectionFactory connectionFactory
                 t.MiddleName AS HomeroomTeacherMiddleName,
                 TRIM(t.LastName + ' ' + t.FirstName + ' ' + ISNULL(t.MiddleName, '')) AS HomeroomTeacherFullName
             FROM [Core].[Classes] c
-            INNER JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
+            LEFT JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
             WHERE c.IsDeleted = 0 AND c.IsActive = 1
               AND (@AcademicYear IS NULL OR c.AcademicYear = @AcademicYear)
             ORDER BY c.GradeLevel ASC, c.ClassName ASC
@@ -253,7 +253,6 @@ public sealed class SchoolClassRepository(SqlConnectionFactory connectionFactory
                 t.MiddleName AS HomeroomTeacherMiddleName,
                 TRIM(t.LastName + ' ' + t.FirstName + ' ' + ISNULL(t.MiddleName, '')) AS HomeroomTeacherFullName
             FROM [Core].[Classes] c
-            -- ЗМІНЕНО НА LEFT JOIN:
             LEFT JOIN [Core].[Teachers] t ON c.HomeroomTeacherId = t.TeacherId
             WHERE c.IsDeleted = 0 
               AND c.IsActive = 1
