@@ -112,9 +112,9 @@ internal static class SchoolClassesEndpoint
             .Produces<IEnumerable<SchoolClassItemResponse>>(StatusCodes.Status200OK);
 
         app.MapGet("/api/teachers/{teacherId:guid}/classes", GetClassesByTeacherIdAsync)
-            .RequireRoles(RoleType.Admin, RoleType.Director)
+            .RequireRoles(RoleType.Admin, RoleType.Director, RoleType.Teacher)
             .WithTags(CoreTag)
-            .WithSummary("Отримання класів конкретного вчителя (Admin, Director)")
+            .WithSummary("Отримання класів конкретного вчителя (Admin, Director, Teacher)")
             .Produces<IEnumerable<SchoolClassItemResponse>>(StatusCodes.Status200OK);
     }
 
