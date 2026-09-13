@@ -112,7 +112,7 @@ internal static class ParentsEndpoint
 
         static async Task<IResult> GetMyProfileAsync(ICurrentUserService currentUserService, ISender sender, CancellationToken cancellationToken)
         {
-            var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken);
+            var userId = currentUserService.GetUserId();
             if (userId == Guid.Empty)
             {
                 return Results.Unauthorized();
