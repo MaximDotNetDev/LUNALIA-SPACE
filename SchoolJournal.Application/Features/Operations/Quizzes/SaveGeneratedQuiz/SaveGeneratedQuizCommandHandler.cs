@@ -21,13 +21,6 @@ public sealed class SaveGeneratedQuizCommandHandler(
         var userRole = currentUserService.GetUserRole();
         var currentUserId = currentUserService.GetUserId();
 
-        if (userRole == RoleType.Teacher && currentUserId != request.TeacherId)
-        {
-            return Error.Forbidden(
-                code: "Quiz.OwnershipViolation",
-                description: "Вчитель може зберігати тести лише для себе.");
-        }
-
         if (!await quizRepository.TeacherExistsAsync(request.TeacherId, cancellationToken).ConfigureAwait(false))
         {
             return Error.NotFound(
