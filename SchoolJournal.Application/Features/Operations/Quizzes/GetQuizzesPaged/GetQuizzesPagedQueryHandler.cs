@@ -11,7 +11,7 @@ namespace SchoolJournal.Application.Features.Operations.Quizzes.GetQuizzesPaged;
 
 public sealed class GetQuizzesPagedQueryHandler(
     IQuizRepository quizRepository,
-    ICurrentUserService currentUserService) // Додано сервіс для перевірки користувача
+    ICurrentUserService currentUserService)
     : IRequestHandler<GetQuizzesPagedQuery, ErrorOr<PagedResponse<QuizResponse>>>
 {
     public async Task<ErrorOr<PagedResponse<QuizResponse>>> Handle(GetQuizzesPagedQuery request, CancellationToken cancellationToken)
@@ -24,7 +24,6 @@ public sealed class GetQuizzesPagedQueryHandler(
 
         if (userRole == RoleType.Teacher)
         {
-            // Якщо це вчитель — віддаємо тільки його тести
             var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
             var result = await quizRepository.GetPagedByTeacherIdAsync(
@@ -33,34 +32,36 @@ public sealed class GetQuizzesPagedQueryHandler(
                 request.PageRequest.PageSize,
                 cancellationToken).ConfigureAwait(false);
 
-            items = result.Items;
+            items = result.Items ?? [];
             totalCount = result.TotalCount;
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                items = items.Where(q => q.Title.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                // Додано безпечну перевірку на null для Title
+                items = items.Where(q => q.Title != null &&
+                                         q.Title.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                 totalCount = items.Count();
             }
         }
         else
         {
-            // Для Адмінів та Директорів віддаємо всі тести
             var result = await quizRepository.GetPagedAsync(
                 request.SearchTerm,
                 request.PageRequest.Skip,
                 request.PageRequest.PageSize,
                 cancellationToken).ConfigureAwait(false);
 
-            items = result.Items;
+            items = result.Items ?? [];
             totalCount = result.TotalCount;
         }
 
+        // Додано безпечну перевірку на null для RowVersion та Title
         var quizResponses = items.Select(quiz => new QuizResponse(
             quiz.QuizId,
             quiz.TeacherId,
             quiz.SubjectId,
-            quiz.Title,
-            Convert.ToBase64String(quiz.RowVersion.ToArray()),
+            quiz.Title ?? string.Empty,
+            quiz.RowVersion != null ? Convert.ToBase64String(quiz.RowVersion.ToArray()) : string.Empty,
             quiz.CreatedAt,
             quiz.UpdatedAt
         )).ToList();

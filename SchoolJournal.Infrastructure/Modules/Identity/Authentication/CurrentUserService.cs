@@ -53,7 +53,9 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor,
         var userId = GetUserId();
         if (userId == Guid.Empty) return Guid.Empty;
 
-        var teacherRepository = serviceProvider.GetRequiredService<ITeacherRepository>();
+        // Створюємо ізольований Scope, щоб уникнути конфліктів життєвого циклу DI
+        using var scope = serviceProvider.CreateScope();
+        var teacherRepository = scope.ServiceProvider.GetRequiredService<ITeacherRepository>();
 
         var teacher = await teacherRepository.GetDetailsByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
 
