@@ -29,19 +29,22 @@ public sealed partial class QuizzesViewModel : ObservableObject
     private readonly ISubjectApi _subjectApi;
     private readonly ISchoolClassApi _schoolClassApi;
     private readonly ITokenStorageService _tokenStorageService;
+    private readonly ITeacherApi _teacherApi;
 
     public QuizzesViewModel(
         IQuizzesApi quizzesApi,
         IQuizAssignmentsApi quizAssignmentsApi,
         ISubjectApi subjectApi,
         ISchoolClassApi schoolClassApi,
-        ITokenStorageService tokenStorageService)
+        ITokenStorageService tokenStorageService,
+        ITeacherApi teacherApi)
     {
         _quizzesApi = quizzesApi;
         _quizAssignmentsApi = quizAssignmentsApi;
         _subjectApi = subjectApi;
         _schoolClassApi = schoolClassApi;
         _tokenStorageService = tokenStorageService;
+        _teacherApi = teacherApi;
 
         _ = LoadDictionariesAsync(CancellationToken.None);
         _ = LoadQuizzesAsync(CancellationToken.None);
@@ -98,6 +101,21 @@ public sealed partial class QuizzesViewModel : ObservableObject
     [ObservableProperty]
     public partial DateTime? AssignDueDate { get; set; }
 
+    private async Task<Guid?> ResolveTeacherIdAsync(CancellationToken ct)
+    {
+        var (accessToken, _) = await _tokenStorageService.GetTokensAsync(ct).ConfigureAwait(true);
+        Guid userId = ExtractUserIdFromJwt(accessToken);
+
+        if (userId == Guid.Empty) return null;
+
+        var teacherResponse = await _teacherApi.GetTeacherByUserIdAsync(userId, ct).ConfigureAwait(true);
+
+        if (!teacherResponse.IsSuccessStatusCode || teacherResponse.Content is null)
+            return null;
+
+        return teacherResponse.Content.TeacherId;
+    }
+
     private async Task LoadDictionariesAsync(CancellationToken ct)
     {
         try
@@ -134,10 +152,19 @@ public sealed partial class QuizzesViewModel : ObservableObject
 
         try
         {
+            var teacherId = await ResolveTeacherIdAsync(ct).ConfigureAwait(true);
+            if (teacherId is null)
+            {
+                ErrorMessage = "Не вдалося ідентифікувати профіль вчителя.";
+                return;
+            }
+
             var response = await _quizzesApi.GetQuizzesPagedAsync(null, 1, 100, ct).ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content is not null)
             {
-                Quizzes = [.. response.Content.Items];
+                Quizzes = new ObservableCollection<QuizResponse>(
+                    response.Content.Items.Where(q => q.TeacherId == teacherId.Value)
+                );
             }
         }
         catch (ApiException ex)
@@ -221,12 +248,11 @@ public sealed partial class QuizzesViewModel : ObservableObject
             return;
         }
 
-        var (accessToken, _) = await _tokenStorageService.GetTokensAsync(ct).ConfigureAwait(true);
-        Guid teacherId = ExtractUserIdFromJwt(accessToken);
+        Guid? teacherId = await ResolveTeacherIdAsync(ct).ConfigureAwait(true);
 
-        if (teacherId == Guid.Empty)
+        if (teacherId == null)
         {
-            ErrorMessage = "Критична помилка безпеки: сесія недійсна.";
+            ErrorMessage = "Критична помилка безпеки: не вдалося ідентифікувати профіль вчителя.";
             return;
         }
 
@@ -255,7 +281,7 @@ public sealed partial class QuizzesViewModel : ObservableObject
                 if (_formQuestions.Count > 0)
                 {
                     var request = new SaveGeneratedQuizRequest(
-                        teacherId,
+                        teacherId.Value,
                         FormSubjectId.Value,
                         Guid.Empty,
                         FormQuizTitle,
@@ -270,7 +296,7 @@ public sealed partial class QuizzesViewModel : ObservableObject
                 }
                 else
                 {
-                    var request = new CreateQuizRequest(teacherId, FormSubjectId.Value, FormQuizTitle);
+                    var request = new CreateQuizRequest(teacherId.Value, FormSubjectId.Value, FormQuizTitle);
                     response = await _quizzesApi.CreateQuizAsync(request, ct).ConfigureAwait(true);
                 }
             }
