@@ -278,7 +278,6 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
                             q.Points
                         )).ToList();
 
-            // ФІКС: Передаємо userId замість realTeacherId, щоб обійти помилку валідатора на бекенді
             var request = new SaveGeneratedQuizRequest(
                                         userId,
                                         SelectedSubjectId.Value,
