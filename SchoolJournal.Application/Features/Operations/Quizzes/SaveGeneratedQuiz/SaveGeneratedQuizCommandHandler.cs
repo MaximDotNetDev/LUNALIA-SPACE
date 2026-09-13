@@ -10,16 +10,12 @@ namespace SchoolJournal.Application.Features.Operations.Quizzes.SaveGeneratedQui
 public sealed class SaveGeneratedQuizCommandHandler(
     IQuizRepository quizRepository,
     IQuizAssignmentRepository assignmentRepository,
-    ICurrentUserService currentUserService,
     IAuditContext auditContext)
     : IRequestHandler<SaveGeneratedQuizCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(SaveGeneratedQuizCommand request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-
-        var userRole = currentUserService.GetUserRole();
-        var currentUserId = currentUserService.GetUserId();
 
         if (!await quizRepository.TeacherExistsAsync(request.TeacherId, cancellationToken).ConfigureAwait(false))
         {
