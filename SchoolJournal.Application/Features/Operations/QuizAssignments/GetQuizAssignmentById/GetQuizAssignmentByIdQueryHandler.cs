@@ -29,9 +29,9 @@ public sealed class GetQuizAssignmentByIdQueryHandler(
         if (userRole == RoleType.Teacher)
         {
             var quiz = await quizRepository.GetByIdAsync(assignment.QuizId, cancellationToken).ConfigureAwait(false);
-            var userId = currentUserService.GetUserId();
+            var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-            if (quiz is null || quiz.TeacherId != userId)
+            if (quiz is null || quiz.TeacherId != currentTeacherId)
             {
                 return Error.Forbidden(
                     code: "QuizAssignment.Forbidden",

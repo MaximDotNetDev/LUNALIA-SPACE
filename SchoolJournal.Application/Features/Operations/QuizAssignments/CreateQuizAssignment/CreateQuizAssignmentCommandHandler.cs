@@ -27,9 +27,9 @@ public sealed class CreateQuizAssignmentCommandHandler(
         }
 
         var userRole = currentUserService.GetUserRole();
-        var userId = currentUserService.GetUserId();
+        var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-        if (userRole == RoleType.Teacher && quiz.TeacherId != userId)
+        if (userRole == RoleType.Teacher && quiz.TeacherId != currentTeacherId)
         {
             return Error.Forbidden(
                 code: "QuizAssignment.Forbidden",
@@ -38,7 +38,7 @@ public sealed class CreateQuizAssignmentCommandHandler(
 
         if (userRole == RoleType.Teacher)
         {
-            var teachesClass = await quizAssignmentRepository.TeacherTeachesClassAsync(userId, request.ClassId, cancellationToken).ConfigureAwait(false);
+            var teachesClass = await quizAssignmentRepository.TeacherTeachesClassAsync(currentTeacherId, request.ClassId, cancellationToken).ConfigureAwait(false);
             if (!teachesClass)
             {
                 return Error.Forbidden(

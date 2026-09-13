@@ -7,4 +7,6 @@ public interface ICurrentUserService
     public Guid GetUserId();
     public RoleType GetUserRole();
     public string? GetClientIp();
+
+    public Task<Guid> GetTeacherIdAsync(CancellationToken cancellationToken = default);
 }

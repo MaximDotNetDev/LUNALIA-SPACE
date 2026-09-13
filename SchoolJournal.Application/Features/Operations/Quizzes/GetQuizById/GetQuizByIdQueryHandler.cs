@@ -26,13 +26,16 @@ public sealed class GetQuizByIdQueryHandler(
         }
 
         var userRole = currentUserService.GetUserRole();
-        var currentUserId = currentUserService.GetUserId();
 
-        if (userRole == RoleType.Teacher && quiz.TeacherId != currentUserId)
+        if (userRole == RoleType.Teacher)
         {
-            return Error.Forbidden(
-                code: "Quiz.OwnershipViolation",
-                description: "Ви не маєте прав на перегляд цього тесту.");
+            var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
+            if (quiz.TeacherId != currentTeacherId)
+            {
+                return Error.Forbidden(
+                    code: "Quiz.OwnershipViolation",
+                    description: "Ви не маєте прав на перегляд цього тесту, оскільки не є його автором.");
+            }
         }
 
         var questionResponses = questions.Select(q => new QuizQuestionResponse(

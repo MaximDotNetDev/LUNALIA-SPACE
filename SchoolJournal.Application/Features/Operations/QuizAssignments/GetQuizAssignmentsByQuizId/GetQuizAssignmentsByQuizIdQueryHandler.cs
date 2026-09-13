@@ -30,8 +30,8 @@ public sealed class GetQuizAssignmentsByQuizIdQueryHandler(
         var userRole = currentUserService.GetUserRole();
         if (userRole == RoleType.Teacher)
         {
-            var userId = currentUserService.GetUserId();
-            if (quiz.TeacherId != userId)
+            var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
+            if (quiz.TeacherId != currentTeacherId)
             {
                 return Error.Forbidden(
                     code: "QuizAssignment.Forbidden",

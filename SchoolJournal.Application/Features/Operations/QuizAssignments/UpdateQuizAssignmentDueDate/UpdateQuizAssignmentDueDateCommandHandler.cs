@@ -34,9 +34,9 @@ public sealed class UpdateQuizAssignmentDueDateCommandHandler(
         }
 
         var userRole = currentUserService.GetUserRole();
-        var userId = currentUserService.GetUserId();
+        var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-        if (userRole == RoleType.Teacher && quiz.TeacherId != userId)
+        if (userRole == RoleType.Teacher && quiz.TeacherId != currentTeacherId)
         {
             return Error.Forbidden(
                 code: "QuizAssignment.Forbidden",

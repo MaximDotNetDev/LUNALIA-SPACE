@@ -22,7 +22,6 @@ public sealed class SubmitQuizCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        // 1. Ідентифікація учня
         var userId = currentUserService.GetUserId();
         var student = await studentRepository.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
 

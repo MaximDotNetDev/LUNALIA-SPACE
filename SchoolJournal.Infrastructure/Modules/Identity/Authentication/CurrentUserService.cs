@@ -1,12 +1,15 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.Extensions.DependencyInjection;
 using SchoolJournal.Application.Common.Interfaces;
+using SchoolJournal.Domain.Entities.Core.IRepositories;
 using SchoolJournal.Domain.Enums.Identity;
 
 namespace SchoolJournal.Infrastructure.Modules.Identity.Authentication;
 
-public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
+public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor,
+    IServiceProvider serviceProvider) : ICurrentUserService
 {
     public RoleType GetUserRole()
     {
@@ -44,5 +47,16 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
         }
 
         return context.Connection.RemoteIpAddress?.ToString();
+    }
+    public async Task<Guid> GetTeacherIdAsync(CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        if (userId == Guid.Empty) return Guid.Empty;
+
+        var teacherRepository = serviceProvider.GetRequiredService<ITeacherRepository>();
+
+        var teacher = await teacherRepository.GetDetailsByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        return teacher?.TeacherId ?? Guid.Empty;
     }
 }
