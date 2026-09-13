@@ -21,7 +21,7 @@ public sealed class GetActiveQuizAssignmentsByClassIdQueryHandler(
         var userRole = currentUserService.GetUserRole();
         if (userRole == RoleType.Teacher)
         {
-            var teacherId = currentUserService.GetUserId();
+            var teacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
             var hasAccess = await quizAssignmentRepository.TeacherTeachesClassAsync(teacherId, request.ClassId, cancellationToken).ConfigureAwait(false);
 
             if (!hasAccess)

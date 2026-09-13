@@ -18,9 +18,9 @@ public sealed class CreateQuizCommandHandler(
         ArgumentNullException.ThrowIfNull(request);
 
         var userRole = currentUserService.GetUserRole();
-        var currentUserId = currentUserService.GetUserId();
+        var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-        if (userRole == RoleType.Teacher && currentUserId != request.TeacherId)
+        if (userRole == RoleType.Teacher && currentTeacherId != request.TeacherId)
         {
             return Error.Forbidden(
                 code: "Quiz.OwnershipViolation",

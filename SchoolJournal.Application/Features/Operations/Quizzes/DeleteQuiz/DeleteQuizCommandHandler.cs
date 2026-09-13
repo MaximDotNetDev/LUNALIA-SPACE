@@ -27,9 +27,9 @@ public sealed class DeleteQuizCommandHandler(
         }
 
         var userRole = currentUserService.GetUserRole();
-        var currentUserId = currentUserService.GetUserId();
+        var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-        if (userRole == RoleType.Teacher && existingQuiz.TeacherId != currentUserId)
+        if (userRole == RoleType.Teacher && existingQuiz.TeacherId != currentTeacherId)
         {
             return Error.Forbidden(
                 code: "Quiz.OwnershipViolation",

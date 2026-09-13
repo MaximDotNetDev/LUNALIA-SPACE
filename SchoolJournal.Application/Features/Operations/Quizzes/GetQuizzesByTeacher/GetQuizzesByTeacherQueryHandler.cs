@@ -18,9 +18,9 @@ public sealed class GetQuizzesByTeacherQueryHandler(
         ArgumentNullException.ThrowIfNull(request);
 
         var userRole = currentUserService.GetUserRole();
-        var currentUserId = currentUserService.GetUserId();
+        var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
 
-        if (userRole == RoleType.Teacher && request.TeacherId != currentUserId)
+        if (userRole == RoleType.Teacher && request.TeacherId != currentTeacherId)
         {
             return Error.Forbidden(
                 code: "Quiz.OwnershipViolation",

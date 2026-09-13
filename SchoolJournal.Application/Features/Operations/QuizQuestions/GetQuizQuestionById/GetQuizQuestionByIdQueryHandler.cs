@@ -36,8 +36,8 @@ public sealed class GetQuizQuestionByIdQueryHandler(
                     description: "Батьківський тест не знайдено.");
             }
 
-            var currentUserId = currentUserService.GetUserId();
-            if (quiz.TeacherId != currentUserId)
+            var currentTeacherId = await currentUserService.GetTeacherIdAsync(cancellationToken).ConfigureAwait(false);
+            if (quiz.TeacherId != currentTeacherId)
             {
                 return Error.Forbidden(
                     code: "QuizQuestion.OwnershipViolation",
