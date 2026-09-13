@@ -249,12 +249,11 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
             return;
         }
 
-        var (accessToken, _) = await tokenStorageService.GetTokensAsync(ct).ConfigureAwait(true);
-        Guid userId = ExtractUserIdFromJwt(accessToken);
+        Guid? teacherId = await ResolveTeacherIdAsync(ct).ConfigureAwait(true);
 
-        if (userId == Guid.Empty)
+        if (teacherId == null)
         {
-            ErrorMessage = "Критична помилка безпеки: сесія недійсна або відсутній ідентифікатор користувача.";
+            ErrorMessage = "Критична помилка: не вдалося ідентифікувати профіль вчителя.";
             return;
         }
 
@@ -279,12 +278,12 @@ public sealed partial class AiQuizGeneratorViewModel : ObservableObject
                         )).ToList();
 
             var request = new SaveGeneratedQuizRequest(
-                                        userId,
-                                        SelectedSubjectId.Value,
-                                        SelectedClassId.Value,
-                                        string.IsNullOrWhiteSpace(GeneratedQuizTitle) ? "Згенероване завдання" : GeneratedQuizTitle,
-                                        questionsRequest
-                                    );
+                                                    teacherId.Value,
+                                                    SelectedSubjectId.Value,
+                                                    SelectedClassId.Value,
+                                                    string.IsNullOrWhiteSpace(GeneratedQuizTitle) ? "Згенероване завдання" : GeneratedQuizTitle,
+                                                    questionsRequest
+                                                );
 
             var response = await quizzesApi.SaveGeneratedQuizAsync(request, ct).ConfigureAwait(true);
 
