@@ -159,7 +159,7 @@ public sealed partial class QuizzesViewModel : ObservableObject
                 return;
             }
 
-            var response = await _quizzesApi.GetQuizzesPagedAsync(null, 1, 100, ct).ConfigureAwait(true);
+            var response = await _quizzesApi.GetQuizzesByTeacherAsync(teacherId.Value, 1, 100, ct).ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content is not null)
             {
                 Quizzes = new ObservableCollection<QuizResponse>(
